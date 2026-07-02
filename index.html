@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Alex+Brush&display=swap" rel="stylesheet">
+    <title>Mandala Skincare</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- CSS propio -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+        <div class="container">
+
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="img/logo-mandala.png" alt="Mandala Belleza Integral" height="80">
+                <span class="ms-2 logo-text">MANDALA</span>
+            </a>
+
+            <button class="btn-carrito" type="button" data-bs-toggle="offcanvas" data-bs-target="#carritoOffcanvas">
+                🛒 <span class="badge-carrito" id="contadorCarrito">0</span>
+            </button>
+
+            <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="menu">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Productos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
+                </ul>
+            </div>
+
+        </div>
+    </nav>
+
+    <header>
+
+        <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
+
+            <div class="carousel-inner">
+
+                <!-- Slide 1 -->
+                <div class="carousel-item active">
+                    <img src="img/banner1.png" class="d-block w-100">
+                    <div class="carousel-caption">
+                        <h1>
+                            <span class="titulo-bold">Productos pensados</span>
+                            <span class="titulo-script">para tú piel</span>
+                        </h1>
+                    </div>
+                </div>
+
+                <!-- Slide 2 -->
+                <div class="carousel-item">
+                    <img src="img/banner2.png" class="d-block w-100">
+                    <div class="carousel-caption">
+                        <h1>
+                            <span class="titulo-bold">Ingredientes específicos</span>
+                            <span class="titulo-script">Lo que tu piel necesita</span>
+                        </h1>
+                    </div>
+                </div>
+
+                <!-- Slide 3 -->
+                <div class="carousel-item">
+                    <img src="img/banner3.jpg" class="d-block w-100">
+                    <div class="carousel-caption">
+                        <h1>
+                            <span class="titulo-bold">Asesoramiento </span>
+                            <span class="titulo-script"> Profesional</span>
+                        </h1>
+                    </div>
+                </div>
+
+            </div>
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+
+        </div>
+
+    </header>
+
+    <section class="container mt-5">
+
+        <div class="row">
+
+            <div class="col-md-8">
+                <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Buscar productos...">
+            </div>
+
+            <div class="col-md-4">
+                <select class="form-select">
+                    <option>Todas las categorías</option>
+                    <option>Limpieza</option>
+                    <option>Emulsiones</option>
+                    <option>Contorno de ojos</option>
+                    <option>Hidratación</option>
+                    <option>Sueros</option>
+                    <option>Protección Solar</option>
+                </select>
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="container py-5">
+
+        <h2 class="text-center mb-5">
+            Nuestros Productos
+        </h2>
+
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4" id="contenedor-productos">
+
+            <!-- Producto 1 -->
+            <div class="col mb-4 producto-card" data-categoria="Contorno de ojos">
+                <div class="card shadow h-100">
+                    <div class="img-hover-wrap">
+                        <img src="img/producto1.webp" class="card-img-top img-normal">
+                        <img src="img/usoproducto1.png" class="card-img-top img-hover">
+                    </div>
+                    <div class="card-body">
+                        <h5>Contorno de ojos</h5>
+                        <p>Rellena & Revitaliza- HINOJO & VIT C -</p>
+                        <p>Contorno textura mantequilla que humecta e hidrata profundamente, iluminando y descongestionando la mirada</p>
+                        <h4>$39.900</h4>
+                        <button class="btn-mandala w-100 btn-comprar" data-nombre="Contorno de ojos" data-precio="39900">Comprar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 2 -->
+            <div class="col mb-4 producto-card" data-categoria="Emulsiones">
+                <div class="card shadow h-100">
+                    <div class="img-hover-wrap">
+                        <img src="img/producto2.webp" class="card-img-top img-normal">
+                        <img src="img/retratoproducto2.webp" class="card-img-top img-hover">
+                    </div>
+                    <div class="card-body">
+                        <h5>Emulsión regeneradora| SHOCK NUTRITIVO </h5>
+                        <p>La Luminosa es una crema facial con virtudes únicas, tanto por la suntuosidad de su textura como por sus beneficios nutritivos y terapéuticos.</p>
+                        <h4>$52.200</h4>
+                        <button class="btn-mandala w-100 btn-comprar" data-nombre="Emulsión regeneradora" data-precio="52200">Comprar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 3 -->
+            <div class="col mb-4 producto-card" data-categoria="Limpieza">
+                <div class="card shadow h-100">
+                    <div class="img-hover-wrap">
+                        <img src="img/producto3.webp" class="card-img-top img-normal">
+                        <img src="img/usoproducto3.webp" class="card-img-top img-hover">
+                    </div>
+                    <div class="card-body">
+                        <h5>Leche facial vegetal de limpieza</h5>
+                        <p>Limpieza suave y profunda. Producto habilitado por ANMAT. Con Cola de Caballo y Caléndula.</p>
+                        <h4>$44.000</h4>
+                        <button class="btn-mandala w-100 btn-comprar" data-nombre="Leche facial vegetal de limpieza" data-precio="44000">Comprar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 4 -->
+            <div class="col mb-4 producto-card" data-categoria="Protección Solar" style="display:none;">
+                <div class="card shadow h-100">
+                    <div class="img-hover-wrap">
+                        <img src="https://placehold.co/400x300/DDE7D4/3E4A3C?text=Producto" class="card-img-top img-normal">
+                        <img src="img/protector-uso.jpg" class="card-img-top img-hover">
+                    </div>
+                    <div class="card-body">
+                        <h5>Protector Solar FPS 50</h5>
+                        <p>Filtro Mineral</p>
+                        <p>Protección solar de amplio espectro, textura liviana sin efecto blanco. Resistente al agua.</p>
+                        <h4>$44.200</h4>
+                        <button class="btn-mandala w-100 btn-comprar" data-nombre="Protector Solar FPS 50" data-precio="44200">Comprar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 5 -->
+            <div class="col mb-4 producto-card" data-categoria="Limpieza" style="display:none;">
+                <div class="card shadow h-100">
+                    <div class="img-hover-wrap">
+                        <img src="https://placehold.co/400x300/DDE7D4/3E4A3C?text=Producto" class="card-img-top img-normal">
+                        <img src="img/tonico-uso.jpg" class="card-img-top img-hover">
+                    </div>
+                    <div class="card-body">
+                        <h5>Tónico Facial</h5>
+                        <p>Agua de Rosas</p>
+                        <p>Equilibra el pH de la piel y prepara el rostro para recibir el resto de tu rutina de cuidado.</p>
+                        <h4>$28.700</h4>
+                        <button class="btn-mandala w-100 btn-comprar" data-nombre="Tónico Facial" data-precio="28700">Comprar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 6 -->
+            <div class="col mb-4 producto-card" data-categoria="Limpieza" style="display:none;">
+                <div class="card shadow h-100">
+                    <div class="img-hover-wrap">
+                        <img src="https://placehold.co/400x300/DDE7D4/3E4A3C?text=Producto" class="card-img-top img-normal">
+                        <img src="img/exfoliante-uso.jpg" class="card-img-top img-hover">
+                    </div>
+                    <div class="card-body">
+                        <h5>Exfoliante Facial</h5>
+                        <p>Enzimas de Papaya</p>
+                        <p>Elimina células muertas suavemente, revelando una piel más luminosa y uniforme.</p>
+                        <h4>$32.400</h4>
+                        <button class="btn-mandala w-100 btn-comprar" data-nombre="Exfoliante Facial" data-precio="32400">Comprar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 7 -->
+            <div class="col mb-4 producto-card" data-categoria="Limpieza" style="display:none;">
+                <div class="card shadow h-100">
+                    <div class="img-hover-wrap">
+                        <img src="https://placehold.co/400x300/DDE7D4/3E4A3C?text=Producto" class="card-img-top img-normal">
+                        <img src="img/mascarilla-uso.jpg" class="card-img-top img-hover">
+                    </div>
+                    <div class="card-body">
+                        <h5>Mascarilla de Arcilla</h5>
+                        <p>Arcilla Verde</p>
+                        <p>Purifica en profundidad y controla el brillo, ideal para pieles mixtas y grasas.</p>
+                        <h4>$36.800</h4>
+                        <button class="btn-mandala w-100 btn-comprar" data-nombre="Mascarilla de Arcilla" data-precio="36800">Comprar</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Paginación -->
+        <nav class="d-flex justify-content-center mt-4">
+            <ul class="pagination" id="paginacion"></ul>
+        </nav>
+
+    </section>
+
+    <!-- Panel del carrito -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="carritoOffcanvas">
+        <div class="offcanvas-header">
+            <h5>Tu Carrito</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column">
+            <ul id="listaCarrito" class="list-unstyled flex-grow-1"></ul>
+            <hr>
+            <h5>Total: <span id="totalCarrito">$0</span></h5>
+            <button class="btn-mandala w-100 mt-2" id="btnWhatsapp">
+                Finalizar pedido por WhatsApp
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast de confirmación -->
+    <div class="toast-confirmacion" id="toastConfirmacion">
+        ✓ Producto agregado al carrito
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/script.js"></script>
+
+</body>
+</html>
