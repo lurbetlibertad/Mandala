@@ -96,7 +96,10 @@
 
     </header>
 
-    <section class="container mt-5">
+    <!-- Medios de pago (se llenan solos desde la hoja "Config") -->
+    <section class="container text-center mt-4" id="medios-pago"></section>
+
+    <section class="container mt-4">
 
         <div class="row">
 
@@ -110,12 +113,6 @@
             <div class="col-md-4">
                 <select class="form-select">
                     <option>Todas las categorías</option>
-                    <option>Limpieza</option>
-                    <option>Emulsiones</option>
-                    <option>Contorno de ojos</option>
-                    <option>Hidratación</option>
-                    <option>Sueros</option>
-                    <option>Protección Solar</option>
                 </select>
             </div>
 
@@ -129,125 +126,14 @@
             Nuestros Productos
         </h2>
 
+        <!-- Spinner mientras se cargan los productos desde la base de datos -->
+        <div id="cargando-productos" class="text-center py-5">
+            <div class="spinner-border" role="status"></div>
+            <p class="mt-2">Cargando productos...</p>
+        </div>
+
         <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4" id="contenedor-productos">
-
-            <!-- Producto 1 -->
-            <div class="col mb-4 producto-card" data-categoria="Contorno de ojos">
-                <div class="card shadow h-100">
-                    <div class="img-hover-wrap">
-                        <img src="img/producto1.webp" class="card-img-top img-normal">
-                        <img src="img/usoproducto1.png" class="card-img-top img-hover">
-                    </div>
-                    <div class="card-body">
-                        <h5>Contorno de ojos</h5>
-                        <p>Rellena & Revitaliza- HINOJO & VIT C -</p>
-                        <p>Contorno textura mantequilla que humecta e hidrata profundamente, iluminando y descongestionando la mirada</p>
-                        <h4>$39.900</h4>
-                        <button class="btn-mandala w-100 btn-comprar" data-nombre="Contorno de ojos" data-precio="39900">Comprar</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Producto 2 -->
-            <div class="col mb-4 producto-card" data-categoria="Emulsiones">
-                <div class="card shadow h-100">
-                    <div class="img-hover-wrap">
-                        <img src="img/producto2.webp" class="card-img-top img-normal">
-                        <img src="img/retratoproducto2.webp" class="card-img-top img-hover">
-                    </div>
-                    <div class="card-body">
-                        <h5>Emulsión regeneradora| SHOCK NUTRITIVO </h5>
-                        <p>La Luminosa es una crema facial con virtudes únicas, tanto por la suntuosidad de su textura como por sus beneficios nutritivos y terapéuticos.</p>
-                        <h4>$52.200</h4>
-                        <button class="btn-mandala w-100 btn-comprar" data-nombre="Emulsión regeneradora" data-precio="52200">Comprar</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Producto 3 -->
-            <div class="col mb-4 producto-card" data-categoria="Limpieza">
-                <div class="card shadow h-100">
-                    <div class="img-hover-wrap">
-                        <img src="img/producto3.webp" class="card-img-top img-normal">
-                        <img src="img/usoproducto3.webp" class="card-img-top img-hover">
-                    </div>
-                    <div class="card-body">
-                        <h5>Leche facial vegetal de limpieza</h5>
-                        <p>Limpieza suave y profunda. Producto habilitado por ANMAT. Con Cola de Caballo y Caléndula.</p>
-                        <h4>$44.000</h4>
-                        <button class="btn-mandala w-100 btn-comprar" data-nombre="Leche facial vegetal de limpieza" data-precio="44000">Comprar</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Producto 4 -->
-            <div class="col mb-4 producto-card" data-categoria="Protección Solar" style="display:none;">
-                <div class="card shadow h-100">
-                    <div class="img-hover-wrap">
-                        <img src="https://placehold.co/400x300/DDE7D4/3E4A3C?text=Producto" class="card-img-top img-normal">
-                        <img src="img/protector-uso.jpg" class="card-img-top img-hover">
-                    </div>
-                    <div class="card-body">
-                        <h5>Protector Solar FPS 50</h5>
-                        <p>Filtro Mineral</p>
-                        <p>Protección solar de amplio espectro, textura liviana sin efecto blanco. Resistente al agua.</p>
-                        <h4>$44.200</h4>
-                        <button class="btn-mandala w-100 btn-comprar" data-nombre="Protector Solar FPS 50" data-precio="44200">Comprar</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Producto 5 -->
-            <div class="col mb-4 producto-card" data-categoria="Limpieza" style="display:none;">
-                <div class="card shadow h-100">
-                    <div class="img-hover-wrap">
-                        <img src="https://placehold.co/400x300/DDE7D4/3E4A3C?text=Producto" class="card-img-top img-normal">
-                        <img src="img/tonico-uso.jpg" class="card-img-top img-hover">
-                    </div>
-                    <div class="card-body">
-                        <h5>Tónico Facial</h5>
-                        <p>Agua de Rosas</p>
-                        <p>Equilibra el pH de la piel y prepara el rostro para recibir el resto de tu rutina de cuidado.</p>
-                        <h4>$28.700</h4>
-                        <button class="btn-mandala w-100 btn-comprar" data-nombre="Tónico Facial" data-precio="28700">Comprar</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Producto 6 -->
-            <div class="col mb-4 producto-card" data-categoria="Limpieza" style="display:none;">
-                <div class="card shadow h-100">
-                    <div class="img-hover-wrap">
-                        <img src="https://placehold.co/400x300/DDE7D4/3E4A3C?text=Producto" class="card-img-top img-normal">
-                        <img src="img/exfoliante-uso.jpg" class="card-img-top img-hover">
-                    </div>
-                    <div class="card-body">
-                        <h5>Exfoliante Facial</h5>
-                        <p>Enzimas de Papaya</p>
-                        <p>Elimina células muertas suavemente, revelando una piel más luminosa y uniforme.</p>
-                        <h4>$32.400</h4>
-                        <button class="btn-mandala w-100 btn-comprar" data-nombre="Exfoliante Facial" data-precio="32400">Comprar</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Producto 7 -->
-            <div class="col mb-4 producto-card" data-categoria="Limpieza" style="display:none;">
-                <div class="card shadow h-100">
-                    <div class="img-hover-wrap">
-                        <img src="https://placehold.co/400x300/DDE7D4/3E4A3C?text=Producto" class="card-img-top img-normal">
-                        <img src="img/mascarilla-uso.jpg" class="card-img-top img-hover">
-                    </div>
-                    <div class="card-body">
-                        <h5>Mascarilla de Arcilla</h5>
-                        <p>Arcilla Verde</p>
-                        <p>Purifica en profundidad y controla el brillo, ideal para pieles mixtas y grasas.</p>
-                        <h4>$36.800</h4>
-                        <button class="btn-mandala w-100 btn-comprar" data-nombre="Mascarilla de Arcilla" data-precio="36800">Comprar</button>
-                    </div>
-                </div>
-            </div>
-
+            <!-- Las cards de productos se generan automáticamente con JS -->
         </div>
 
         <!-- Paginación -->

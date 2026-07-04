@@ -74,17 +74,24 @@ body {
 
 /* ===== BOTON COMPRAR ===== */
 .btn-mandala {
-    background-color: #c6cc91;
-    border-color: #f6fff5;
-    color: #fff;
-    border-radius: 8%;
+    background-color: #7C8B5F;
+    border: none;
+    color: #FFF8F0;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
 .btn-mandala:hover {
-    background-color: #f6fff5;
-    border-color:  #c6cc91;;
+    background-color: #5C6B4F;
+    transform: translateY(-1px);
 }
 
+.btn-mandala:active {
+    transform: translateY(0);
+}
 /* ===== CARDS DE PRODUCTOS===== */
 .card-body h5 {
     font-size: 1.1rem;
@@ -202,4 +209,60 @@ body {
     background-color: #3E4A3C;
     border-color: #3E4A3C;
     color: #fff;
+}
+.img-hover-wrap {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Badge de descuento — tipo etiqueta de producto natural */
+.badge-descuento {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: #C97B5C; /* terracota, contrasta lindo con el verde salvia de tus botones */
+    color: #FFF8F0;
+    padding: 6px 14px 6px 12px;
+    border-radius: 4px 14px 4px 14px; /* esquinas asimétricas, sensación "etiqueta" en vez de cartel de oferta */
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    z-index: 2;
+    transform: rotate(-3deg); /* un toque artesanal, no perfectamente cuadrado */
+}
+
+/* Precio anterior tachado, más suave que un gris genérico */
+.precio-anterior {
+    text-decoration: line-through;
+    text-decoration-color: #C97B5C;
+    text-decoration-thickness: 1.5px;
+    color: #A89A8C;
+    font-size: 0.9rem;
+    margin-right: 10px;
+    font-weight: 400;
+}
+
+.precio-wrap {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.precio-wrap h4 {
+    color: #C97B5C;
+    margin: 0;
+}
+
+/* Medios de pago */
+.badge-pago {
+    display: inline-block;
+    background: #F1EDE4;
+    color: #5C6B4F;
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
 }
