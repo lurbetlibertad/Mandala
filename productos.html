@@ -19,7 +19,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
         <div class="container">
 
-            <a class="navbar-brand d-flex align-items-center" href="#">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
                 <img src="img/logo-mandala.png" alt="Mandala Belleza Integral" height="80">
                 <span class="ms-2 logo-text">MANDALA</span>
             </a>
@@ -35,66 +35,17 @@
             <div class="collapse navbar-collapse" id="menu">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="productos.html">Productos</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="productos.html">Productos</a></li>
                     <li class="nav-item"><a class="nav-link" href="blog.html">Blog</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contacto.html">Contacto</a></li>
                 </ul>
             </div>
 
         </div>
     </nav>
 
-    <header>
-
-        <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
-
-            <div class="carousel-inner">
-
-                <!-- Slide 1 -->
-                <div class="carousel-item active">
-                    <img src="img/banner1.png" class="d-block w-100">
-                    <div class="carousel-caption">
-                        <h1>
-                            <span class="titulo-bold">Productos pensados</span>
-                            <span class="titulo-script">para tú piel</span>
-                        </h1>
-                    </div>
-                </div>
-
-                <!-- Slide 2 -->
-                <div class="carousel-item">
-                    <img src="img/banner2.png" class="d-block w-100">
-                    <div class="carousel-caption">
-                        <h1>
-                            <span class="titulo-bold">Ingredientes específicos</span>
-                            <span class="titulo-script">Lo que tu piel necesita</span>
-                        </h1>
-                    </div>
-                </div>
-
-                <!-- Slide 3 -->
-                <div class="carousel-item">
-                    <img src="img/banner3.jpg" class="d-block w-100">
-                    <div class="carousel-caption">
-                        <h1>
-                            <span class="titulo-bold">Asesoramiento </span>
-                            <span class="titulo-script"> Profesional</span>
-                        </h1>
-                    </div>
-                </div>
-
-            </div>
-
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon"></span>
-            </button>
-
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
-                <span class="carousel-control-next-icon"></span>
-            </button>
-
-        </div>
-
+    <header class="py-4 bg-light text-center">
+        <h1 class="titulo-bold" style="font-size: 2rem;">Nuestros Productos</h1>
     </header>
 
     <!-- Medios de pago (se llenan solos desde la hoja "Config") -->
@@ -140,10 +91,6 @@
 
     <section class="container py-5">
 
-        <h2 class="text-center mb-5">
-            Nuestros Productos
-        </h2>
-
         <!-- Spinner mientras se cargan los productos desde la base de datos -->
         <div id="cargando-productos" class="text-center py-5">
             <div class="spinner-border" role="status"></div>
@@ -182,6 +129,15 @@
     <div class="toast-confirmacion" id="toastConfirmacion">
         ✓ Producto agregado al carrito
     </div>
+
+    <footer class="footer-mandala py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-2">© 2026 Mandala Skincare</p>
+            <a href="politicas-privacidad.html">Políticas de privacidad</a> ·
+            <a href="cambios-y-devoluciones.html">Cambios y devoluciones</a> ·
+            <a href="blog.html">Blog</a>
+        </div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/script.js"></script>

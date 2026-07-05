@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", init);
 
 /* =========================================================
@@ -21,14 +20,16 @@ let config = {};
 let carrito = [];
 let paginaActual = 1;
 
-let contenedor, selectCategoria, inputBusqueda, paginacion, cargando;
+let contenedor, selectCategoria, selectMarca, selectOrden, inputBusqueda, paginacion, cargando;
 
 /* =========================================================
    3) INICIO: trae productos + config desde la base de datos
    ========================================================= */
 async function init() {
     contenedor = document.getElementById("contenedor-productos");
-    selectCategoria = document.querySelector(".form-select");
+    selectCategoria = document.getElementById("filtroCategoria");
+    selectMarca = document.getElementById("filtroMarca");
+    selectOrden = document.getElementById("ordenPrecio");
     inputBusqueda = document.querySelector(".form-control");
     paginacion = document.getElementById("paginacion");
     cargando = document.getElementById("cargando-productos");
@@ -44,8 +45,16 @@ async function init() {
         }
 
         productosData = await resProductos.json();
+        productosData = productosData.map(limpiarClavesProducto);
+
         const configFilas = await resConfig.json();
-        config = Object.fromEntries(configFilas.map(fila => [fila.clave, fila.valor]));
+        config = Object.fromEntries(
+            configFilas.map(fila => [
+                String(fila.clave || "").trim(),
+                String(fila.valor || "").trim()
+            ])
+        );
+        console.log("Config cargada:", config); // Podés ver esto en la consola (F12) para revisar qué llegó
     } catch (error) {
         console.error("No se pudieron cargar los productos:", error);
         cargando.innerHTML = `<p class="text-danger">No se pudieron cargar los productos. Probá recargar la página.</p>`;
@@ -56,8 +65,21 @@ async function init() {
 
     poblarCategorias();
     renderizarMediosDePago();
+    renderizarAvisoEnvioGratis();
     configurarEventos();
     renderizar();
+}
+
+/* =========================================================
+   3.1) LIMPIEZA DE DATOS — evita que espacios de más en los
+   títulos de columna de la planilla rompan el sitio
+   ========================================================= */
+function limpiarClavesProducto(producto) {
+    const limpio = {};
+    Object.keys(producto).forEach(clave => {
+        limpio[clave.trim()] = producto[clave];
+    });
+    return limpio;
 }
 
 /* =========================================================
@@ -89,13 +111,15 @@ function estaActivo(producto) {
    ========================================================= */
 function obtenerProductosFiltrados() {
     const categoria = selectCategoria.value;
+    const marca = selectMarca.value;
     const texto = inputBusqueda.value.toLowerCase();
 
     return productosData.filter(producto => {
         const activo = estaActivo(producto);
         const coincideCategoria = categoria === "Todas las categorías" || producto.categoria === categoria;
+        const coincideMarca = marca === "Todas las marcas" || producto.marca === marca;
         const coincideTexto = (producto.nombre || "").toLowerCase().includes(texto);
-        return activo && coincideCategoria && coincideTexto;
+        return activo && coincideCategoria && coincideMarca && coincideTexto;
     });
 }
 
@@ -103,7 +127,9 @@ function obtenerProductosFiltrados() {
    6) RENDER DE PRODUCTOS + PAGINACIÓN
    ========================================================= */
 function renderizar() {
-    const filtrados = obtenerProductosFiltrados();
+    let filtrados = obtenerProductosFiltrados();
+    filtrados = ordenarProductos(filtrados);
+
     const totalPaginas = Math.ceil(filtrados.length / PRODUCTOS_POR_PAGINA) || 1;
 
     if (paginaActual > totalPaginas) paginaActual = 1;
@@ -129,10 +155,29 @@ function renderizar() {
     generarBotonesPaginacion(totalPaginas);
 }
 
+function ordenarProductos(lista) {
+    const orden = selectOrden.value;
+    const copia = [...lista];
+
+    if (orden === "menor") {
+        copia.sort((a, b) => precioFinal(a) - precioFinal(b));
+    } else if (orden === "mayor") {
+        copia.sort((a, b) => precioFinal(b) - precioFinal(a));
+    }
+    // "relevancia" no reordena, se mantiene el orden de la planilla
+    return copia;
+}
+
 function crearCardHTML(producto) {
     const precioOriginal = Number(producto.precio) || 0;
     const final = precioFinal(producto);
     const tieneDescuento = final < precioOriginal;
+    const esDestacado = esVerdadero(producto.destacado);
+
+    const stockDefinido = producto.stock !== undefined && producto.stock !== "";
+    const stockNumero = stockDefinido ? Number(producto.stock) : null;
+    const sinStock = stockDefinido && stockNumero <= 0;
+    const stockBajo = stockDefinido && stockNumero > 0 && stockNumero <= 5;
 
     return `
     <div class="col mb-4 producto-card" data-categoria="${producto.categoria || ""}">
@@ -141,16 +186,21 @@ function crearCardHTML(producto) {
                 <img src="${producto.imagen || 'https://placehold.co/400x300/DDE7D4/3E4A3C?text=Producto'}" class="card-img-top img-normal">
                 ${producto.imagenHover ? `<img src="${producto.imagenHover}" class="card-img-top img-hover">` : ""}
                 ${tieneDescuento ? `<span class="badge-descuento">-${producto.descuento}%</span>` : ""}
+                ${esDestacado ? `<span class="badge-destacado">★ Más vendido</span>` : ""}
             </div>
             <div class="card-body">
                 <h5>${producto.nombre || ""}</h5>
+                ${producto.marca ? `<p class="marca-producto">${producto.marca}</p>` : ""}
                 ${producto.descripcionCorta ? `<p>${producto.descripcionCorta}</p>` : ""}
                 ${producto.descripcionLarga ? `<p>${producto.descripcionLarga}</p>` : ""}
+                ${stockBajo ? `<p class="aviso-stock">¡Últimas ${stockNumero} unidades!</p>` : ""}
                 <div class="precio-wrap">
                     ${tieneDescuento ? `<span class="precio-anterior">${formatearPrecio(precioOriginal)}</span>` : ""}
                     <h4>${formatearPrecio(final)}</h4>
                 </div>
-                <button class="btn-mandala w-100 btn-comprar" data-nombre="${producto.nombre || ""}" data-precio="${final}">Comprar</button>
+                <button class="btn-mandala w-100 btn-comprar" data-nombre="${producto.nombre || ""}" data-precio="${final}" ${sinStock ? "disabled" : ""}>
+                    ${sinStock ? "Sin stock" : "Comprar"}
+                </button>
             </div>
         </div>
     </div>`;
@@ -184,10 +234,14 @@ function generarBotonesPaginacion(totalPaginas) {
    ========================================================= */
 function poblarCategorias() {
     const categorias = [...new Set(productosData.map(p => p.categoria).filter(Boolean))];
-
     selectCategoria.innerHTML =
         `<option>Todas las categorías</option>` +
         categorias.map(c => `<option>${c}</option>`).join("");
+
+    const marcas = [...new Set(productosData.map(p => p.marca).filter(Boolean))];
+    selectMarca.innerHTML =
+        `<option>Todas las marcas</option>` +
+        marcas.map(m => `<option>${m}</option>`).join("");
 }
 
 /* =========================================================
@@ -201,6 +255,38 @@ function renderizarMediosDePago() {
     contenedorPago.innerHTML = medios
         .map(m => `<span class="badge-pago">${m}</span>`)
         .join(" ");
+}
+
+/* =========================================================
+   8.1) AVISO DE ENVÍO GRATIS
+   ========================================================= */
+function renderizarAvisoEnvioGratis() {
+    const contenedorAviso = document.getElementById("aviso-envio-gratis");
+    if (!contenedorAviso || !config.envio_gratis_desde) return;
+
+    const monto = Number(config.envio_gratis_desde);
+    if (!monto) return;
+
+    contenedorAviso.innerHTML =
+        `<span class="badge-envio-gratis"><span class="camion">🚚</span> Envío gratis en compras desde ${formatearPrecio(monto)}</span>`;
+}
+
+function actualizarAvisoEnvioCarrito(totalCarrito) {
+    const aviso = document.getElementById("avisoEnvioCarrito");
+    if (!aviso) return;
+
+    const monto = Number(config.envio_gratis_desde);
+    if (!monto) {
+        aviso.innerHTML = "";
+        return;
+    }
+
+    if (totalCarrito >= monto) {
+        aviso.innerHTML = `<p class="texto-envio-gratis-ok">✓ ¡Tenés envío gratis!</p>`;
+    } else {
+        const faltante = monto - totalCarrito;
+        aviso.innerHTML = `<p class="texto-envio-gratis">Te faltan ${formatearPrecio(faltante)} para tener envío gratis</p>`;
+    }
 }
 
 /* =========================================================
@@ -234,6 +320,7 @@ function actualizarCarrito() {
 
     total.textContent = formatearPrecio(suma);
     contador.textContent = carrito.length;
+    actualizarAvisoEnvioCarrito(suma);
 
     document.querySelectorAll("#listaCarrito button").forEach(btn => {
         btn.addEventListener("click", function () {
@@ -245,6 +332,16 @@ function actualizarCarrito() {
 
 function configurarEventos() {
     selectCategoria.addEventListener("change", function () {
+        paginaActual = 1;
+        renderizar();
+    });
+
+    selectMarca.addEventListener("change", function () {
+        paginaActual = 1;
+        renderizar();
+    });
+
+    selectOrden.addEventListener("change", function () {
         paginaActual = 1;
         renderizar();
     });

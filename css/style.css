@@ -266,3 +266,49 @@ body {
     font-size: 0.85rem;
     font-weight: 600;
 }
+/* Badge "Más vendido" */
+.badge-destacado {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #E8C468;
+    color: #4A3B1F;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    z-index: 2;
+}
+
+/* Aviso de stock bajo */
+.aviso-stock {
+    color: #C0392B;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+
+/* Banner de envío gratis, arriba de los productos */
+.badge-envio-gratis {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #EAF2E3;
+    color: #5C6B4F;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.badge-envio-gratis .camion {
+    display: inline-block;
+    animation: manejar 1.8s ease-in-out infinite;
+}
+
+@keyframes manejar {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(5px); }
+}
+
