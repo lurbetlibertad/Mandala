@@ -20,7 +20,7 @@
         <div class="container">
 
             <a class="navbar-brand d-flex align-items-center" href="index.html">
-                <img src="img/logo-mandala.png" alt="Mandala Belleza Integral" height="80">
+                <img src="img/logo-mandala.jpg" alt="Mandala Belleza Integral" height="80">
                 <span class="ms-2 logo-text">MANDALA</span>
             </a>
 
@@ -107,6 +107,64 @@
         </nav>
 
     </section>
+
+    <!-- Modal de detalle de producto -->
+    <div class="modal fade" id="modalProducto" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalProductoNombre"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <img id="modalProductoImagen" src="" class="img-fluid rounded w-100">
+                        </div>
+                        <div class="col-md-6">
+                            <p id="modalProductoMarca" class="text-muted"></p>
+                            <p id="modalProductoDescripcionCorta"></p>
+                            <p id="modalProductoDescripcionLarga"></p>
+                            <div class="precio-wrap mb-3">
+                                <span id="modalProductoPrecioAnterior" class="precio-anterior"></span>
+                                <h4 id="modalProductoPrecioFinal"></h4>
+                            </div>
+                            <button class="btn-mandala w-100" id="modalProductoBtnComprar">Comprar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de detalle de producto -->
+    <div class="modal fade" id="modalProducto" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalProductoNombre"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <img id="modalProductoImagen" src="" class="img-fluid rounded w-100">
+                        </div>
+                        <div class="col-md-6">
+                            <p id="modalProductoMarca" class="text-muted"></p>
+                            <p id="modalProductoDescripcionCorta"></p>
+                            <p id="modalProductoDescripcionLarga"></p>
+                            <div class="precio-wrap mb-3">
+                                <span id="modalProductoPrecioAnterior" class="precio-anterior"></span>
+                                <h4 id="modalProductoPrecioFinal"></h4>
+                            </div>
+                            <button class="btn-mandala w-100" id="modalProductoBtnComprar">Comprar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Panel del carrito -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="carritoOffcanvas">

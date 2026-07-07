@@ -83,11 +83,35 @@ function limpiarClavesProducto(producto) {
 }
 
 /* =========================================================
+   3.2) LIMPIEZA DE PRECIOS — soporta números planos ("39990"),
+   con separador de miles ("42.900") y el formato truncado que
+   exportan algunas tiendas ("$42.90" en realidad es $42.900)
+   ========================================================= */
+function limpiarPrecio(valorCrudo) {
+    if (valorCrudo === undefined || valorCrudo === null || valorCrudo === "") return 0;
+
+    let texto = String(valorCrudo).replace(/\$/g, "").trim();
+    if (!texto) return 0;
+
+    const partes = texto.split(".");
+
+    // Caso "42.90" → en realidad es $42.900 (se truncó el último cero al exportar)
+    if (partes.length === 2 && partes[1].length === 2) {
+        return Math.round(parseFloat(texto) * 1000);
+    }
+
+    // Cualquier otro punto se interpreta como separador de miles (ej "42.900" → 42900)
+    texto = texto.replace(/\./g, "");
+    const numero = Number(texto);
+    return isNaN(numero) ? 0 : numero;
+}
+
+/* =========================================================
    4) CÁLCULO DE PRECIO CON DESCUENTO / PROMO
    ========================================================= */
 function precioFinal(producto) {
-    const precio = Number(producto.precio) || 0;
-    const descuento = Number(producto.descuento) || 0;
+    const precio = limpiarPrecio(producto.precio);
+    const descuento = Number(String(producto.descuento || "").replace(/%/g, "").trim()) || 0;
     const promoActiva = esVerdadero(producto.promoActiva);
 
     if (promoActiva && descuento > 0) {
@@ -142,7 +166,8 @@ function renderizar() {
         : `<p class="text-center w-100">No se encontraron productos.</p>`;
 
     document.querySelectorAll(".btn-comprar").forEach(btn => {
-        btn.addEventListener("click", function () {
+        btn.addEventListener("click", function (e) {
+            e.stopPropagation(); // evita que el click también abra el modal de detalle
             carrito.push({
                 nombre: this.dataset.nombre,
                 precio: Number(this.dataset.precio)
@@ -152,7 +177,47 @@ function renderizar() {
         });
     });
 
+    // Click en cualquier parte de la card (menos el botón Comprar) abre el modal con la descripción completa
+    const cards = contenedor.querySelectorAll(".card-clickeable");
+    enPagina.forEach((producto, i) => {
+        if (cards[i]) {
+            cards[i].addEventListener("click", () => abrirModalProducto(producto));
+        }
+    });
+
     generarBotonesPaginacion(totalPaginas);
+}
+
+/* =========================================================
+   6.1) MODAL DE DETALLE DE PRODUCTO
+   ========================================================= */
+function abrirModalProducto(producto) {
+    const precioOriginal = limpiarPrecio(producto.precio);
+    const final = precioFinal(producto);
+    const tieneDescuento = final < precioOriginal;
+
+    document.getElementById("modalProductoNombre").textContent = producto.nombre || "";
+    document.getElementById("modalProductoImagen").src =
+        producto.imagen || "https://placehold.co/400x300/DDE7D4/3E4A3C?text=Producto";
+    document.getElementById("modalProductoMarca").textContent = producto.marca || "";
+    document.getElementById("modalProductoDescripcionCorta").textContent = producto.descripcionCorta || "";
+    document.getElementById("modalProductoDescripcionLarga").textContent = producto.descripcionLarga || "";
+
+    const precioAnteriorEl = document.getElementById("modalProductoPrecioAnterior");
+    precioAnteriorEl.textContent = tieneDescuento ? formatearPrecio(precioOriginal) : "";
+    document.getElementById("modalProductoPrecioFinal").textContent = formatearPrecio(final);
+
+    const btnComprar = document.getElementById("modalProductoBtnComprar");
+    btnComprar.dataset.nombre = producto.nombre || "";
+    btnComprar.dataset.precio = final;
+    btnComprar.onclick = function () {
+        carrito.push({ nombre: producto.nombre, precio: final });
+        actualizarCarrito();
+        mostrarToast();
+        bootstrap.Modal.getOrCreateInstance(document.getElementById("modalProducto")).hide();
+    };
+
+    bootstrap.Modal.getOrCreateInstance(document.getElementById("modalProducto")).show();
 }
 
 function ordenarProductos(lista) {
@@ -169,7 +234,7 @@ function ordenarProductos(lista) {
 }
 
 function crearCardHTML(producto) {
-    const precioOriginal = Number(producto.precio) || 0;
+    const precioOriginal = limpiarPrecio(producto.precio);
     const final = precioFinal(producto);
     const tieneDescuento = final < precioOriginal;
     const esDestacado = esVerdadero(producto.destacado);
@@ -181,18 +246,17 @@ function crearCardHTML(producto) {
 
     return `
     <div class="col mb-4 producto-card" data-categoria="${producto.categoria || ""}">
-        <div class="card shadow h-100">
+        <div class="card shadow h-100 card-clickeable" role="button">
             <div class="img-hover-wrap">
                 <img src="${producto.imagen || 'https://placehold.co/400x300/DDE7D4/3E4A3C?text=Producto'}" class="card-img-top img-normal">
                 ${producto.imagenHover ? `<img src="${producto.imagenHover}" class="card-img-top img-hover">` : ""}
-                ${tieneDescuento ? `<span class="badge-descuento">-${producto.descuento}%</span>` : ""}
+                ${tieneDescuento ? `<span class="badge-descuento">-${String(producto.descuento).replace(/%/g, "").trim()}%</span>` : ""}
                 ${esDestacado ? `<span class="badge-destacado">★ Más vendido</span>` : ""}
             </div>
             <div class="card-body">
                 <h5>${producto.nombre || ""}</h5>
                 ${producto.marca ? `<p class="marca-producto">${producto.marca}</p>` : ""}
                 ${producto.descripcionCorta ? `<p>${producto.descripcionCorta}</p>` : ""}
-                ${producto.descripcionLarga ? `<p>${producto.descripcionLarga}</p>` : ""}
                 ${stockBajo ? `<p class="aviso-stock">¡Últimas ${stockNumero} unidades!</p>` : ""}
                 <div class="precio-wrap">
                     ${tieneDescuento ? `<span class="precio-anterior">${formatearPrecio(precioOriginal)}</span>` : ""}
