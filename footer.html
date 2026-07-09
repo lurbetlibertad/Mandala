@@ -1,0 +1,199 @@
+<footer class="footer-mandala">
+
+    <div class="container">
+
+        <div class="footer-divider">
+            <span></span>
+
+            <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 3c3 3.2 4 6 4 8.5A4 4.5 0 0112 16a4 4.5 0 01-4-4.5C8 9 9 6.2 12 3z"/>
+                <path d="M12 8v11"/>
+            </svg>
+
+            <span></span>
+        </div>
+
+        <div class="row gy-5">
+
+            <div class="col-lg-4">
+
+                <h2 class="footer-logo">MANDALA</h2>
+
+                <div class="footer-subtitulo">
+                    skincare natural
+                </div>
+
+                <p class="footer-texto">
+                    Rituales de cuidado hechos con ingredientes botánicos para acompañar la belleza natural de tu piel.
+                </p>
+
+                <div class="footer-redes">
+
+                    <a href="https://instagram.com" target="_blank">
+                        <i class="bi bi-instagram"></i>
+                    </a>
+
+                    <a href="https://facebook.com" target="_blank">
+                        <i class="bi bi-facebook"></i>
+                    </a>
+
+                    <a href="https://wa.me/5491100000000" target="_blank">
+                        <i class="bi bi-whatsapp"></i>
+                    </a>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-2 col-md-4">
+
+                <h5>Explorar</h5>
+
+                <a href="index.html">Inicio</a>
+                <a href="productos.html">Productos</a>
+                <a href="blog.html">Blog</a>
+
+            </div>
+
+            <div class="col-lg-3 col-md-4">
+
+                <h5>Ayuda</h5>
+
+                <a href="politicas-privacidad.html">Políticas de privacidad</a>
+
+                <div class="footer-dropdown">
+                    <a href="#" class="footer-dropdown-toggle" id="footerDropdownCambios">
+                        Cambios y devoluciones <i class="bi bi-chevron-down footer-dropdown-icono"></i>
+                    </a>
+                    <ul class="footer-dropdown-menu" id="footerDropdownMenu">
+                        <li><a href="cambios-y-devoluciones.html#cambios">Cambios y devoluciones</a></li>
+                        <p>El plazo para realizar un cambio es de 5 días desde la fecha de recepción. Los productos deben estar sin uso, sin daños, con sus etiquetas y embalaje original.
+
+¿A dónde debo solicitar el cambio o devolución?
+
+Deberás enviar un mail esteticamandala0@gmali.com indicando cual es el cambio que deseas realizar y te responderemos con los pasos a seguir.
+
+Si tu pedido fue despachado, podrás hacer el cambio en nuestro local de Av. Ituzaingo 2755 OLAVARRIA 
+
+En caso de no poder acercarse, se deberá enviar primero los productos para cambio por Correo Argentino y luego se hará el despacho con los nuevos productos. Ambos envíos estarán a cargo del comprador, aún siendo un pedido que supere el monto de envío gratis.
+
+ 
+
+¿Qué productos no tienen cambio?
+
+Los siguientes productos no tienen cambio: máscaras de pestañas, delineadores y labiales (gloss y barra); debido a una restricción por razones de higiene. Tampoco tienen cambio aquellos productos donde no se puede verificar la modificación de su contenido como los esmaltes de uñas, bases líquidas, correctores, maquillaje en polvo, así como aquellos que productos que tengan celofán y haya sido abierto.</p>
+    
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="col-lg-3 col-md-4">
+
+                <h5>Contacto</h5>
+
+                <p>esteticamandala0@gmail.com</p>
+
+                <p> +54 9 22844697777</p>
+
+                <p>Olavarría,Buenos Aires, Argentina</p>
+
+                <form class="footer-news">
+
+                    <input type="email" placeholder="esteticamandala0@gmail.com">
+
+                    <button type="submit">
+                        Enviar
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="footer-copy">
+        © 2026 Mandala Skincare • Todos los derechos reservados
+    </div>
+
+</footer>
+
+<style>
+    .footer-dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .footer-dropdown-toggle {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .footer-dropdown-icono {
+        font-size: 0.75rem;
+        transition: transform 0.2s ease;
+    }
+
+    .footer-dropdown.abierto .footer-dropdown-icono {
+        transform: rotate(180deg);
+    }
+
+    .footer-dropdown-menu {
+        display: none;
+        list-style: none;
+        margin: 8px 0 0 0;
+        padding: 8px 0;
+        min-width: 200px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        position: absolute;
+        top: 100%;
+        left: 0;
+        z-index: 999;
+    }
+
+    .footer-dropdown-menu.mostrar {
+        display: block;
+    }
+
+    .footer-dropdown-menu li a {
+        display: block;
+        padding: 8px 16px;
+        color: #333 !important;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .footer-dropdown-menu li a:hover {
+        background: #f2f2f2;
+    }
+</style>
+
+<script>
+(function () {
+    const toggle = document.getElementById('footerDropdownCambios');
+    const menu = document.getElementById('footerDropdownMenu');
+    const wrapper = toggle ? toggle.closest('.footer-dropdown') : null;
+
+    if (toggle && menu && wrapper) {
+        toggle.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            menu.classList.toggle('mostrar');
+            wrapper.classList.toggle('abierto');
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!wrapper.contains(e.target)) {
+                menu.classList.remove('mostrar');
+                wrapper.classList.remove('abierto');
+            }
+        });
+    }
+})();
+</script>

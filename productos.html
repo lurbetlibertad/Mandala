@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Alex+Brush&display=swap" rel="stylesheet">
     <title>Mandala Skincare</title>
 
@@ -37,7 +38,7 @@
                     <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
                     <li class="nav-item"><a class="nav-link active" href="productos.html">Productos</a></li>
                     <li class="nav-item"><a class="nav-link" href="blog.html">Blog</a></li>
-                    <li class="nav-item"><a class="nav-link" href="contacto.html">Contacto</a></li>
+                
                 </ul>
             </div>
 
@@ -137,35 +138,6 @@
         </div>
     </div>
 
-    <!-- Modal de detalle de producto -->
-    <div class="modal fade" id="modalProducto" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalProductoNombre"></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            <img id="modalProductoImagen" src="" class="img-fluid rounded w-100">
-                        </div>
-                        <div class="col-md-6">
-                            <p id="modalProductoMarca" class="text-muted"></p>
-                            <p id="modalProductoDescripcionCorta"></p>
-                            <p id="modalProductoDescripcionLarga"></p>
-                            <div class="precio-wrap mb-3">
-                                <span id="modalProductoPrecioAnterior" class="precio-anterior"></span>
-                                <h4 id="modalProductoPrecioFinal"></h4>
-                            </div>
-                            <button class="btn-mandala w-100" id="modalProductoBtnComprar">Comprar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Panel del carrito -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="carritoOffcanvas">
         <div class="offcanvas-header">
@@ -198,7 +170,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/script.js"></script>
+   <script src="js/script.js?v=2"></script>
 
 </body>
 </html>

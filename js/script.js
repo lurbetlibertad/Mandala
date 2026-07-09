@@ -3,13 +3,8 @@ document.addEventListener("DOMContentLoaded", init);
 /* =========================================================
    1) CONFIGURACIÓN — lo único que tenés que tocar en el código
    ========================================================= */
-// Reemplazá esto por la URL que te da SheetDB cuando conectás tu Google Sheet.
-// Ejemplo: "https://sheetdb.io/api/v1/abc123xyz"
 const SHEETDB_URL = "https://sheetdb.io/api/v1/hsc4qoycmeuyk";
-
-// Se usa solo si la hoja "Config" no tiene la fila numeroWhatsapp
 const NUMERO_WHATSAPP_DEFAULT = "5491100000000";
-
 const PRODUCTOS_POR_PAGINA = 6;
 
 /* =========================================================
@@ -19,6 +14,8 @@ let productosData = [];
 let config = {};
 let carrito = [];
 let paginaActual = 1;
+let grupoPagina = 0;
+const PAGINAS_POR_GRUPO = 3;
 
 let contenedor, selectCategoria, selectMarca, selectOrden, inputBusqueda, paginacion, cargando;
 
@@ -54,7 +51,7 @@ async function init() {
                 String(fila.valor || "").trim()
             ])
         );
-        console.log("Config cargada:", config); // Podés ver esto en la consola (F12) para revisar qué llegó
+        console.log("Config cargada:", config);
     } catch (error) {
         console.error("No se pudieron cargar los productos:", error);
         cargando.innerHTML = `<p class="text-danger">No se pudieron cargar los productos. Probá recargar la página.</p>`;
@@ -71,8 +68,7 @@ async function init() {
 }
 
 /* =========================================================
-   3.1) LIMPIEZA DE DATOS — evita que espacios de más en los
-   títulos de columna de la planilla rompan el sitio
+   3.1) LIMPIEZA DE DATOS
    ========================================================= */
 function limpiarClavesProducto(producto) {
     const limpio = {};
@@ -83,9 +79,7 @@ function limpiarClavesProducto(producto) {
 }
 
 /* =========================================================
-   3.2) LIMPIEZA DE PRECIOS — soporta números planos ("39990"),
-   con separador de miles ("42.900") y el formato truncado que
-   exportan algunas tiendas ("$42.90" en realidad es $42.900)
+   3.2) LIMPIEZA DE PRECIOS
    ========================================================= */
 function limpiarPrecio(valorCrudo) {
     if (valorCrudo === undefined || valorCrudo === null || valorCrudo === "") return 0;
@@ -95,12 +89,10 @@ function limpiarPrecio(valorCrudo) {
 
     const partes = texto.split(".");
 
-    // Caso "42.90" → en realidad es $42.900 (se truncó el último cero al exportar)
     if (partes.length === 2 && partes[1].length === 2) {
         return Math.round(parseFloat(texto) * 1000);
     }
 
-    // Cualquier otro punto se interpreta como separador de miles (ej "42.900" → 42900)
     texto = texto.replace(/\./g, "");
     const numero = Number(texto);
     return isNaN(numero) ? 0 : numero;
@@ -125,8 +117,6 @@ function esVerdadero(valor) {
 }
 
 function estaActivo(producto) {
-    // Si la columna "activo" está vacía o dice cualquier cosa que no sea "FALSE",
-    // el producto se muestra. Solo se oculta si dice explícitamente "FALSE".
     return String(producto.activo || "").trim().toUpperCase() !== "FALSE";
 }
 
@@ -167,7 +157,7 @@ function renderizar() {
 
     document.querySelectorAll(".btn-comprar").forEach(btn => {
         btn.addEventListener("click", function (e) {
-            e.stopPropagation(); // evita que el click también abra el modal de detalle
+            e.stopPropagation();
             carrito.push({
                 nombre: this.dataset.nombre,
                 precio: Number(this.dataset.precio)
@@ -177,7 +167,6 @@ function renderizar() {
         });
     });
 
-    // Click en cualquier parte de la card (menos el botón Comprar) abre el modal con la descripción completa
     const cards = contenedor.querySelectorAll(".card-clickeable");
     enPagina.forEach((producto, i) => {
         if (cards[i]) {
@@ -186,6 +175,62 @@ function renderizar() {
     });
 
     generarBotonesPaginacion(totalPaginas);
+}
+
+function generarBotonesPaginacion(totalPaginas) {
+    paginacion.innerHTML = "";
+    grupoPagina = Math.floor((paginaActual - 1) / PAGINAS_POR_GRUPO);
+
+    const inicio = grupoPagina * PAGINAS_POR_GRUPO + 1;
+    const fin = Math.min(inicio + PAGINAS_POR_GRUPO - 1, totalPaginas);
+
+    if (grupoPagina > 0) {
+        const li = document.createElement("li");
+        li.className = "page-item";
+        li.innerHTML = `
+            <a class="page-link" href="#">
+                <i class="bi bi-chevron-left"></i>
+            </a>
+        `;
+        li.onclick = (e) => {
+            e.preventDefault();
+            grupoPagina--;
+            paginaActual = grupoPagina * PAGINAS_POR_GRUPO + 1;
+            renderizar();
+        };
+        paginacion.appendChild(li);
+    }
+
+    for (let i = inicio; i <= fin; i++) {
+        const li = document.createElement("li");
+        li.className = "page-item" + (i === paginaActual ? " active" : "");
+        li.innerHTML = `
+            <a class="page-link" href="#">${i}</a>
+        `;
+        li.onclick = (e) => {
+            e.preventDefault();
+            paginaActual = i;
+            renderizar();
+        };
+        paginacion.appendChild(li);
+    }
+
+    if (fin < totalPaginas) {
+        const li = document.createElement("li");
+        li.className = "page-item";
+        li.innerHTML = `
+            <a class="page-link" href="#">
+                <i class="bi bi-chevron-right"></i>
+            </a>
+        `;
+        li.onclick = (e) => {
+            e.preventDefault();
+            grupoPagina++;
+            paginaActual = grupoPagina * PAGINAS_POR_GRUPO + 1;
+            renderizar();
+        };
+        paginacion.appendChild(li);
+    }
 }
 
 /* =========================================================
@@ -229,7 +274,6 @@ function ordenarProductos(lista) {
     } else if (orden === "mayor") {
         copia.sort((a, b) => precioFinal(b) - precioFinal(a));
     }
-    // "relevancia" no reordena, se mantiene el orden de la planilla
     return copia;
 }
 
@@ -270,31 +314,8 @@ function crearCardHTML(producto) {
     </div>`;
 }
 
-function generarBotonesPaginacion(totalPaginas) {
-    paginacion.innerHTML = "";
-
-    for (let i = 1; i <= totalPaginas; i++) {
-        const li = document.createElement("li");
-        li.className = "page-item" + (i === paginaActual ? " active" : "");
-
-        const link = document.createElement("a");
-        link.className = "page-link";
-        link.href = "#";
-        link.textContent = i;
-
-        link.addEventListener("click", function (e) {
-            e.preventDefault();
-            paginaActual = i;
-            renderizar();
-        });
-
-        li.appendChild(link);
-        paginacion.appendChild(li);
-    }
-}
-
 /* =========================================================
-   7) CATEGORÍAS DINÁMICAS (se generan solas según tus productos)
+   7) CATEGORÍAS DINÁMICAS
    ========================================================= */
 function poblarCategorias() {
     const categorias = [...new Set(productosData.map(p => p.categoria).filter(Boolean))];
@@ -309,7 +330,7 @@ function poblarCategorias() {
 }
 
 /* =========================================================
-   8) MEDIOS DE PAGO (vienen de la hoja "Config", columna medios_pago)
+   8) MEDIOS DE PAGO Y ENVÍO
    ========================================================= */
 function renderizarMediosDePago() {
     const contenedorPago = document.getElementById("medios-pago");
@@ -321,9 +342,6 @@ function renderizarMediosDePago() {
         .join(" ");
 }
 
-/* =========================================================
-   8.1) AVISO DE ENVÍO GRATIS
-   ========================================================= */
 function renderizarAvisoEnvioGratis() {
     const contenedorAviso = document.getElementById("aviso-envio-gratis");
     if (!contenedorAviso || !config.envio_gratis_desde) return;
