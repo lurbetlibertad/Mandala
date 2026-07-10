@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", init);
 /* =========================================================
    1) CONFIGURACIÓN — lo único que tenés que tocar en el código
    ========================================================= */
-const SHEETDB_URL = "https://sheetdb.io/api/v1/hsc4qoycmeuyk";
+const SPREADSHEET_ID = "1wjad7AZpvZQPueGCmnb8qg6zSFxjLMIR21V4r2ZxK0I";
 const NUMERO_WHATSAPP_DEFAULT = "5491100000000";
 const PRODUCTOS_POR_PAGINA = 6;
 
@@ -40,21 +40,15 @@ async function init() {
     sinResultados = document.getElementById("sinResultadosBusqueda");
 
     try {
-        const [resProductos, resConfig] = await Promise.all([
-            fetch(`${SHEETDB_URL}?sheet=Productos`),
-            fetch(`${SHEETDB_URL}?sheet=Config`)
+        const [productosCrudos, configCrudo] = await Promise.all([
+            cargarHojaComoObjetos("Productos"),
+            cargarHojaComoObjetos("Config")
         ]);
 
-        if (!resProductos.ok || !resConfig.ok) {
-            throw new Error("La base de datos respondió con error");
-        }
+        productosData = productosCrudos.map(limpiarClavesProducto);
 
-        productosData = await resProductos.json();
-        productosData = productosData.map(limpiarClavesProducto);
-
-        const configFilas = await resConfig.json();
         config = Object.fromEntries(
-            configFilas.map(fila => [
+            configCrudo.map(fila => [
                 String(fila.clave || "").trim(),
                 String(fila.valor || "").trim()
             ])
@@ -74,6 +68,36 @@ async function init() {
     configurarEventos();
     renderizar();
     configurarEventosBuscadorAvanzado();
+}
+
+/* =========================================================
+   3.0) LECTURA DE LA GOOGLE SHEET (CSV público, sin límite de requests)
+   ========================================================= */
+function urlHojaCSV(nombreHoja) {
+    return `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(nombreHoja)}&_=${Date.now()}`;
+}
+
+async function cargarHojaComoObjetos(nombreHoja) {
+    const respuesta = await fetch(urlHojaCSV(nombreHoja));
+
+    if (!respuesta.ok) {
+        throw new Error(`No se pudo leer la hoja "${nombreHoja}" (status ${respuesta.status}). ` +
+            `Revisá que la pestaña se llame exactamente así y que el Sheet esté compartido como ` +
+            `"Cualquiera con el enlace puede ver".`);
+    }
+
+    const textoCSV = await respuesta.text();
+
+    const resultado = Papa.parse(textoCSV, {
+        header: true,
+        skipEmptyLines: true
+    });
+
+    if (resultado.errors && resultado.errors.length) {
+        console.warn(`Avisos al parsear la hoja "${nombreHoja}":`, resultado.errors);
+    }
+
+    return resultado.data;
 }
 
 /* =========================================================
