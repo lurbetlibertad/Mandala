@@ -1,0 +1,39 @@
+<nav class="navbar navbar-expand-lg navbar-mandala shadow-sm">
+    <div class="container">
+
+        <a class="navbar-brand d-flex align-items-center" href="index.html">
+            <img src="img/logo-mandala.jpg" alt="Mandala Belleza Integral" height="80">
+            <span class="ms-2 logo-text">MANDALA</span>
+        </a>
+
+        <button class="btn-carrito" type="button" data-bs-toggle="offcanvas" data-bs-target="#carritoOffcanvas">
+            🛒 <span class="badge-carrito" id="contadorCarrito">0</span>
+        </button>
+
+        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="menu">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="index.html" data-pagina="index.html">Inicio</a></li>
+                <li class="nav-item"><a class="nav-link" href="productos.html" data-pagina="productos.html">Productos</a></li>
+                <li class="nav-item"><a class="nav-link" href="blog.html" data-pagina="blog.html">Blog</a></li>
+            </ul>
+        </div>
+
+    </div>
+</nav>
+
+<script>
+(function () {
+    // Marca el link del menú que corresponde a la página actual,
+    // igual en Inicio, Productos y Blog.
+    const paginaActual = location.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('#menu .nav-link[data-pagina]').forEach(function (link) {
+        if (link.getAttribute('data-pagina') === paginaActual) {
+            link.classList.add('active');
+        }
+    });
+})();
+</script>

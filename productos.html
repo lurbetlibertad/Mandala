@@ -5,78 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Alex+Brush&display=swap" rel="stylesheet">
-    <title>Mandala Skincare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Alex+Brush&display=swap" rel="stylesheet">
+    <title>Productos — Mandala Skincare</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <!-- CSS propio -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <!-- MENÚ DE NAVEGACIÓN PROPIO -->
+    <nav class="navbar navbar-expand-lg navbar-light navbar-mandala shadow-sm sticky-top">
         <div class="container">
-
             <a class="navbar-brand d-flex align-items-center" href="index.html">
                 <img src="img/logo-mandala.jpg" alt="Mandala Belleza Integral" height="80">
                 <span class="ms-2 logo-text">MANDALA</span>
             </a>
 
-            <button class="btn-carrito" type="button" data-bs-toggle="offcanvas" data-bs-target="#carritoOffcanvas">
-                🛒 <span class="badge-carrito" id="contadorCarrito">0</span>
-            </button>
-
-            <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menu">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <div class="d-flex align-items-center order-lg-last gap-3">
+                <button class="btn-carrito" type="button" data-bs-toggle="offcanvas" data-bs-target="#carritoOffcanvas">
+                    🛒 <span class="badge-carrito" id="contadorCarrito">0</span>
+                </button>
+                <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menu">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
 
             <div class="collapse navbar-collapse" id="menu">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
                     <li class="nav-item"><a class="nav-link active" href="productos.html">Productos</a></li>
                     <li class="nav-item"><a class="nav-link" href="blog.html">Blog</a></li>
-                
                 </ul>
             </div>
-
         </div>
     </nav>
 
-    <header class="py-4 bg-light text-center">
-        <h1 class="titulo-bold" style="font-size: 2rem;">Nuestros Productos</h1>
+    <header class="py-5 text-center">
+        <h1 class="titulo-bold text-dark" style="font-size: 2.5rem; font-family: 'Playfair Display', serif;">Nuestros Productos</h1>
     </header>
 
-    <!-- Medios de pago (se llenan solos desde la hoja "Config") -->
-    <section class="container text-center mt-4" id="medios-pago"></section>
+    <!-- Medios de pago (Hereda tus estilos de insignia) -->
+    <section class="container text-center mb-4" id="medios-pago"></section>
 
-    <section class="container mt-4">
-
-        <div class="row g-2">
-
-            <div class="col-md-5">
-                <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Buscar productos...">
+    <!-- BARRA DE FILTROS Y BUSCADOR AVANZADO INTEGRADO -->
+    <section class="container mb-5">
+        <div class="row g-3 align-items-center">
+            
+            <div class="col-md-4">
+                <div class="buscador-wrap">
+                    <span class="buscador-icono"><i class="bi bi-search"></i></span>
+                    <input
+                        type="text"
+                        id="buscadorProductos"
+                        class="form-control"
+                        placeholder="Buscar productos..."
+                        autocomplete="off">
+                    <button type="button" id="btnLimpiarBusqueda" class="buscador-limpiar">
+                        <i class="bi bi-x-circle-fill"></i>
+                    </button>
+                    <!-- Lista de sugerencias con tu clase del CSS -->
+                    <ul id="listaSugerencias" class="buscador-sugerencias"></ul>
+                </div>
             </div>
 
             <div class="col-md-3">
-                <select class="form-select" id="filtroCategoria">
+                <select class="form-select rounded-pill border-secondary-subtle px-3 py-2" id="filtroCategoria">
                     <option>Todas las categorías</option>
                 </select>
             </div>
 
             <div class="col-md-2">
-                <select class="form-select" id="filtroMarca">
+                <select class="form-select rounded-pill border-secondary-subtle px-3 py-2" id="filtroMarca">
                     <option>Todas las marcas</option>
                 </select>
             </div>
 
-            <div class="col-md-2">
-                <select class="form-select" id="ordenPrecio">
+            <div class="col-md-3">
+                <select class="form-select rounded-pill border-secondary-subtle px-3 py-2" id="ordenPrecio">
                     <option value="relevancia">Ordenar por</option>
                     <option value="menor">Precio: menor a mayor</option>
                     <option value="mayor">Precio: mayor a menor</option>
@@ -85,52 +93,59 @@
 
         </div>
 
-        <!-- Aviso de envío gratis -->
-        <div class="text-center mt-3" id="aviso-envio-gratis"></div>
-
+        <!-- Banner dinámico de envío gratis -->
+        <div class="text-center mt-4" id="aviso-envio-gratis"></div>
     </section>
 
-    <section class="container py-5">
+    <!-- CONTENEDOR DE PRODUCTOS -->
+    <section class="container py-2">
 
-        <!-- Spinner mientras se cargan los productos desde la base de datos -->
+        <!-- Spinner de carga -->
         <div id="cargando-productos" class="text-center py-5">
-            <div class="spinner-border" role="status"></div>
-            <p class="mt-2">Cargando productos...</p>
+            <div class="spinner-border" role="status" style="color: #7C8B5F;"></div>
+            <p class="mt-2 text-muted">Cargando productos...</p>
+        </div>
+
+        <!-- Mensaje de no resultados (Usa tu estilo sin-resultados-busqueda) -->
+        <div id="sinResultadosBusqueda" class="text-center py-5 sin-resultados-busqueda">
+            <i class="bi bi-emoji-frown"></i>
+            <h4>No se encontraron resultados</h4>
+            <p class="sin-resultados-sugerencia">Probá escribiendo otra palabra o borrando los filtros activos.</p>
         </div>
 
         <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4" id="contenedor-productos">
-            <!-- Las cards de productos se generan automáticamente con JS -->
+            <!-- Las cards se inyectan automáticamente desde script.js -->
         </div>
 
-        <!-- Paginación -->
-        <nav class="d-flex justify-content-center mt-4">
+        <!-- Paginación con tus estilos personalizados -->
+        <nav class="d-flex justify-content-center mt-5">
             <ul class="pagination" id="paginacion"></ul>
         </nav>
 
     </section>
 
-    <!-- Modal de detalle de producto -->
+    <!-- MODAL DE DETALLE DE PRODUCTO -->
     <div class="modal fade" id="modalProducto" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalProductoNombre"></h5>
+            <div class="modal-content border-0 rounded-3 overflow-hidden shadow">
+                <div class="modal-header border-0 bg-light py-3 px-4">
+                    <h5 class="modal-title fw-bold" id="modalProductoNombre" style="font-family: 'Playfair Display', serif; color: #4f5d48;"></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="row g-4">
+                <div class="modal-body p-4">
+                    <div class="row g-4 align-items-center">
                         <div class="col-md-6">
-                            <img id="modalProductoImagen" src="" class="img-fluid rounded w-100">
+                            <img id="modalProductoImagen" src="" class="img-fluid rounded w-100 object-fit-cover" style="max-height: 350px;">
                         </div>
                         <div class="col-md-6">
-                            <p id="modalProductoMarca" class="text-muted"></p>
-                            <p id="modalProductoDescripcionCorta"></p>
-                            <p id="modalProductoDescripcionLarga"></p>
-                            <div class="precio-wrap mb-3">
+                            <p id="modalProductoMarca" class="text-uppercase tracking-wider small fw-bold mb-1" style="color: #be7a62;"></p>
+                            <p id="modalProductoDescripcionCorta" class="fw-semibold text-dark mb-2"></p>
+                            <p id="modalProductoDescripcionLarga" class="text-muted small mb-4"></p>
+                            <div class="precio-wrap mb-4 bg-light p-3 rounded-3">
                                 <span id="modalProductoPrecioAnterior" class="precio-anterior"></span>
-                                <h4 id="modalProductoPrecioFinal"></h4>
+                                <h4 id="modalProductoPrecioFinal" class="d-inline fw-bold"></h4>
                             </div>
-                            <button class="btn-mandala w-100" id="modalProductoBtnComprar">Comprar</button>
+                            <button class="btn-mandala w-100 py-2" id="modalProductoBtnComprar">Comprar</button>
                         </div>
                     </div>
                 </div>
@@ -138,39 +153,71 @@
         </div>
     </div>
 
-    <!-- Panel del carrito -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="carritoOffcanvas">
-        <div class="offcanvas-header">
-            <h5>Tu Carrito</h5>
+    <!-- PANEL LATERAL DE CARRITO (OFFCANVAS) -->
+    <div class="offcanvas offcanvas-end border-0 shadow-lg" tabindex="-1" id="carritoOffcanvas">
+        <div class="offcanvas-header border-bottom py-3">
+            <h5 class="fw-bold m-0" style="font-family: 'Playfair Display', serif; color: #4f5d48;">Tu Carrito</h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body d-flex flex-column">
-            <ul id="listaCarrito" class="list-unstyled flex-grow-1"></ul>
+            <ul id="listaCarrito" class="list-unstyled flex-grow-1 overflow-y-auto"></ul>
             <div id="avisoEnvioCarrito" class="mb-2"></div>
             <hr>
-            <h5>Total: <span id="totalCarrito">$0</span></h5>
-            <button class="btn-mandala w-100 mt-2" id="btnWhatsapp">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted fw-semibold">Total:</span>
+                <span id="totalCarrito" class="fw-bold fs-4" style="color: #4f5d48;">$0</span>
+            </div>
+            <button class="btn-mandala w-100 py-2.5" id="btnWhatsapp">
                 Finalizar pedido por WhatsApp
             </button>
         </div>
     </div>
 
-    <!-- Toast de confirmación -->
+    <!-- TOAST DE CONFIRMACIÓN -->
     <div class="toast-confirmacion" id="toastConfirmacion">
         ✓ Producto agregado al carrito
     </div>
 
-    <footer class="footer-mandala py-4 mt-5">
-        <div class="container text-center">
-            <p class="mb-2">© 2026 Mandala Skincare</p>
-            <a href="politicas-privacidad.html">Políticas de privacidad</a> ·
-            <a href="cambios-y-devoluciones.html">Cambios y devoluciones</a> ·
-            <a href="blog.html">Blog</a>
+    <!-- FOOTER INSTITUCIONAL COMPLETO -->
+    <footer class="footer-mandala">
+        <div class="container">
+            <div class="footer-divider">
+                <span></span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"/></svg>
+                <span></span>
+            </div>
+            <div class="row g-4 text-start">
+                <div class="col-md-4">
+                    <h2 class="footer-logo">MANDALA</h2>
+                    <div class="footer-subtitulo">Belleza Integral</div>
+                    <p class="footer-texto">Espacio dedicado al cuidado facial, cosmética avanzada y capacitación integral para profesionales.</p>
+                </div>
+                <div class="col-md-2">
+                    <h5>Navegación</h5>
+                    <a href="index.html">Inicio</a>
+                    <a href="productos.html">Productos</a>
+                    <a href="blog.html">Blog</a>
+                </div>
+                <!-- <div class="col-md-3">
+                    <h5>Políticas</h5>
+                    <a href="politicas-privacidad.html">Políticas de privacidad</a>
+                    <a href="cambios-y-devoluciones.html">Cambios y devoluciones</a>
+                </div> 
+                <div class="col-md-3">
+                    <h5>Newsletter</h5>
+                    <div class="footer-news">
+                        <input type="email" placeholder="Tu email...">
+                        <button type="button">Unirse</button>
+                    </div>
+                </div>
+            </div>-->
+            <div class="footer-copy">
+                © 2026 Mandala Skincare — Diseñado con dedicación.
+            </div>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-   <script src="js/script.js?v=2"></script>
-
+    <script src="js/script.js?v=2"></script>
 </body>
 </html>

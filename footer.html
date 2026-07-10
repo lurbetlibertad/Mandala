@@ -20,12 +20,8 @@
                 <h2 class="footer-logo">MANDALA</h2>
 
                 <div class="footer-subtitulo">
-                    skincare natural
+                    Belleza Integral
                 </div>
-
-                <p class="footer-texto">
-                    Rituales de cuidado hechos con ingredientes botánicos para acompañar la belleza natural de tu piel.
-                </p>
 
                 <div class="footer-redes">
 
@@ -62,28 +58,30 @@
                 <a href="politicas-privacidad.html">Políticas de privacidad</a>
 
                 <div class="footer-dropdown">
+
                     <a href="#" class="footer-dropdown-toggle" id="footerDropdownCambios">
                         Cambios y devoluciones <i class="bi bi-chevron-down footer-dropdown-icono"></i>
                     </a>
+
                     <ul class="footer-dropdown-menu" id="footerDropdownMenu">
-                        <li><a href="cambios-y-devoluciones.html#cambios">Cambios y devoluciones</a></li>
-                        <p>El plazo para realizar un cambio es de 5 días desde la fecha de recepción. Los productos deben estar sin uso, sin daños, con sus etiquetas y embalaje original.
+                        <li>
+                            <button type="button" class="footer-dropdown-ampliar" data-bs-toggle="modal" data-bs-target="#modalCambiosDevoluciones">
+                                <i class="bi bi-arrows-angle-expand"></i> Ver mensaje completo
+                            </button>
+                        </li>
+                        <li class="footer-dropdown-info">
+                            <p>El plazo para realizar un cambio es de 5 días desde la fecha de recepción. Los productos deben estar sin uso, sin daños, con sus etiquetas y embalaje original.</p>
 
-¿A dónde debo solicitar el cambio o devolución?
+                            <p><strong>¿A dónde debo solicitar el cambio o devolución?</strong></p>
+                            <p>Deberás enviar un mail a <a href="mailto:esteticamandala0@gmali.com">esteticamandala0@gmali.com</a> indicando cuál es el cambio que deseas realizar y te responderemos con los pasos a seguir.</p>
+                            <p>Si tu pedido fue despachado, podrás hacer el cambio en nuestro local de Av. Ituzaingó 2755, Olavarría.</p>
+                            <p>En caso de no poder acercarte, deberás enviar primero los productos para cambio por Correo Argentino y luego se hará el despacho con los nuevos productos. Ambos envíos estarán a cargo del comprador, aún siendo un pedido que supere el monto de envío gratis.</p>
 
-Deberás enviar un mail esteticamandala0@gmali.com indicando cual es el cambio que deseas realizar y te responderemos con los pasos a seguir.
-
-Si tu pedido fue despachado, podrás hacer el cambio en nuestro local de Av. Ituzaingo 2755 OLAVARRIA 
-
-En caso de no poder acercarse, se deberá enviar primero los productos para cambio por Correo Argentino y luego se hará el despacho con los nuevos productos. Ambos envíos estarán a cargo del comprador, aún siendo un pedido que supere el monto de envío gratis.
-
- 
-
-¿Qué productos no tienen cambio?
-
-Los siguientes productos no tienen cambio: máscaras de pestañas, delineadores y labiales (gloss y barra); debido a una restricción por razones de higiene. Tampoco tienen cambio aquellos productos donde no se puede verificar la modificación de su contenido como los esmaltes de uñas, bases líquidas, correctores, maquillaje en polvo, así como aquellos que productos que tengan celofán y haya sido abierto.</p>
-    
+                            <p><strong>¿Qué productos no tienen cambio?</strong></p>
+                            <p>Los siguientes productos no tienen cambio: máscaras de pestañas, delineadores y labiales (gloss y barra), debido a una restricción por razones de higiene. Tampoco tienen cambio aquellos productos donde no se puede verificar la modificación de su contenido, como esmaltes de uñas, bases líquidas, correctores y maquillaje en polvo, así como aquellos que tengan celofán y haya sido abierto.</p>
+                        </li>
                     </ul>
+
                 </div>
 
             </div>
@@ -96,7 +94,7 @@ Los siguientes productos no tienen cambio: máscaras de pestañas, delineadores 
 
                 <p> +54 9 22844697777</p>
 
-                <p>Olavarría,Buenos Aires, Argentina</p>
+                <p>Olavarría, Buenos Aires, Argentina</p>
 
                 <form class="footer-news">
 
@@ -120,59 +118,28 @@ Los siguientes productos no tienen cambio: máscaras de pestañas, delineadores 
 
 </footer>
 
-<style>
-    .footer-dropdown {
-        position: relative;
-        display: inline-block;
-    }
+<!-- Modal: Cambios y devoluciones (versión ampliada) -->
+<div class="modal fade" id="modalCambiosDevoluciones" tabindex="-1" aria-labelledby="modalCambiosLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content modal-mandala">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalCambiosLabel">Cambios y devoluciones</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p>El plazo para realizar un cambio es de 5 días desde la fecha de recepción. Los productos deben estar sin uso, sin daños, con sus etiquetas y embalaje original.</p>
 
-    .footer-dropdown-toggle {
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
+                <h6>¿A dónde debo solicitar el cambio o devolución?</h6>
+                <p>Deberás enviar un mail a <a href="mailto:esteticamandala0@gmali.com">esteticamandala0@gmali.com</a> indicando cuál es el cambio que deseas realizar y te responderemos con los pasos a seguir.</p>
+                <p>Si tu pedido fue despachado, podrás hacer el cambio en nuestro local de Av. Ituzaingó 2755, Olavarría.</p>
+                <p>En caso de no poder acercarte, deberás enviar primero los productos para cambio por Correo Argentino y luego se hará el despacho con los nuevos productos. Ambos envíos estarán a cargo del comprador, aún siendo un pedido que supere el monto de envío gratis.</p>
 
-    .footer-dropdown-icono {
-        font-size: 0.75rem;
-        transition: transform 0.2s ease;
-    }
-
-    .footer-dropdown.abierto .footer-dropdown-icono {
-        transform: rotate(180deg);
-    }
-
-    .footer-dropdown-menu {
-        display: none;
-        list-style: none;
-        margin: 8px 0 0 0;
-        padding: 8px 0;
-        min-width: 200px;
-        background: #fff;
-        border-radius: 8px;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-        position: absolute;
-        top: 100%;
-        left: 0;
-        z-index: 999;
-    }
-
-    .footer-dropdown-menu.mostrar {
-        display: block;
-    }
-
-    .footer-dropdown-menu li a {
-        display: block;
-        padding: 8px 16px;
-        color: #333 !important;
-        text-decoration: none;
-        white-space: nowrap;
-    }
-
-    .footer-dropdown-menu li a:hover {
-        background: #f2f2f2;
-    }
-</style>
+                <h6>¿Qué productos no tienen cambio?</h6>
+                <p>Los siguientes productos no tienen cambio: máscaras de pestañas, delineadores y labiales (gloss y barra), debido a una restricción por razones de higiene. Tampoco tienen cambio aquellos productos donde no se puede verificar la modificación de su contenido, como esmaltes de uñas, bases líquidas, correctores y maquillaje en polvo, así como aquellos que tengan celofán y haya sido abierto.</p>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
 (function () {

@@ -8,7 +8,7 @@ const NUMERO_WHATSAPP_DEFAULT = "5491100000000";
 const PRODUCTOS_POR_PAGINA = 6;
 
 /* =========================================================
-   2) ESTADO
+   2) ESTADO GLOBALES
    ========================================================= */
 let productosData = [];
 let config = {};
@@ -16,8 +16,11 @@ let carrito = [];
 let paginaActual = 1;
 let grupoPagina = 0;
 const PAGINAS_POR_GRUPO = 3;
+let indiceActivo = -1;
 
-let contenedor, selectCategoria, selectMarca, selectOrden, inputBusqueda, paginacion, cargando;
+// Elementos del DOM
+let contenedor, selectCategoria, selectMarca, selectOrden, paginacion, cargando;
+let inputBuscador, listaSugerencias, btnLimpiar, sinResultados;
 
 /* =========================================================
    3) INICIO: trae productos + config desde la base de datos
@@ -27,9 +30,14 @@ async function init() {
     selectCategoria = document.getElementById("filtroCategoria");
     selectMarca = document.getElementById("filtroMarca");
     selectOrden = document.getElementById("ordenPrecio");
-    inputBusqueda = document.querySelector(".form-control");
     paginacion = document.getElementById("paginacion");
     cargando = document.getElementById("cargando-productos");
+
+    // Elementos del buscador avanzado
+    inputBuscador = document.getElementById("buscadorProductos");
+    listaSugerencias = document.getElementById("listaSugerencias");
+    btnLimpiar = document.getElementById("btnLimpiarBusqueda");
+    sinResultados = document.getElementById("sinResultadosBusqueda");
 
     try {
         const [resProductos, resConfig] = await Promise.all([
@@ -65,10 +73,11 @@ async function init() {
     renderizarAvisoEnvioGratis();
     configurarEventos();
     renderizar();
+    configurarEventosBuscadorAvanzado();
 }
 
 /* =========================================================
-   3.1) LIMPIEZA DE DATOS
+   3.1) LIMPIEZA DE DATOS Y PRECIOS
    ========================================================= */
 function limpiarClavesProducto(producto) {
     const limpio = {};
@@ -78,9 +87,6 @@ function limpiarClavesProducto(producto) {
     return limpio;
 }
 
-/* =========================================================
-   3.2) LIMPIEZA DE PRECIOS
-   ========================================================= */
 function limpiarPrecio(valorCrudo) {
     if (valorCrudo === undefined || valorCrudo === null || valorCrudo === "") return 0;
 
@@ -121,19 +127,17 @@ function estaActivo(producto) {
 }
 
 /* =========================================================
-   5) FILTRADO
+   5) FILTRADO GENERAL (Por selectores)
    ========================================================= */
 function obtenerProductosFiltrados() {
     const categoria = selectCategoria.value;
     const marca = selectMarca.value;
-    const texto = inputBusqueda.value.toLowerCase();
 
     return productosData.filter(producto => {
         const activo = estaActivo(producto);
         const coincideCategoria = categoria === "Todas las categorías" || producto.categoria === categoria;
         const coincideMarca = marca === "Todas las marcas" || producto.marca === marca;
-        const coincideTexto = (producto.nombre || "").toLowerCase().includes(texto);
-        return activo && coincideCategoria && coincideMarca && coincideTexto;
+        return activo && coincideCategoria && coincideMarca;
     });
 }
 
@@ -155,6 +159,7 @@ function renderizar() {
         ? enPagina.map(crearCardHTML).join("")
         : `<p class="text-center w-100">No se encontraron productos.</p>`;
 
+    // Eventos de botones de compra
     document.querySelectorAll(".btn-comprar").forEach(btn => {
         btn.addEventListener("click", function (e) {
             e.stopPropagation();
@@ -167,6 +172,7 @@ function renderizar() {
         });
     });
 
+    // Eventos para abrir modal
     const cards = contenedor.querySelectorAll(".card-clickeable");
     enPagina.forEach((producto, i) => {
         if (cards[i]) {
@@ -187,11 +193,7 @@ function generarBotonesPaginacion(totalPaginas) {
     if (grupoPagina > 0) {
         const li = document.createElement("li");
         li.className = "page-item";
-        li.innerHTML = `
-            <a class="page-link" href="#">
-                <i class="bi bi-chevron-left"></i>
-            </a>
-        `;
+        li.innerHTML = `<a class="page-link" href="#"><i class="bi bi-chevron-left"></i></a>`;
         li.onclick = (e) => {
             e.preventDefault();
             grupoPagina--;
@@ -204,9 +206,7 @@ function generarBotonesPaginacion(totalPaginas) {
     for (let i = inicio; i <= fin; i++) {
         const li = document.createElement("li");
         li.className = "page-item" + (i === paginaActual ? " active" : "");
-        li.innerHTML = `
-            <a class="page-link" href="#">${i}</a>
-        `;
+        li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
         li.onclick = (e) => {
             e.preventDefault();
             paginaActual = i;
@@ -218,11 +218,7 @@ function generarBotonesPaginacion(totalPaginas) {
     if (fin < totalPaginas) {
         const li = document.createElement("li");
         li.className = "page-item";
-        li.innerHTML = `
-            <a class="page-link" href="#">
-                <i class="bi bi-chevron-right"></i>
-            </a>
-        `;
+        li.innerHTML = `<a class="page-link" href="#"><i class="bi bi-chevron-right"></i></a>`;
         li.onclick = (e) => {
             e.preventDefault();
             grupoPagina++;
@@ -380,8 +376,10 @@ function formatearPrecio(numero) {
 
 function mostrarToast() {
     const toast = document.getElementById("toastConfirmacion");
-    toast.classList.add("mostrar");
-    setTimeout(() => toast.classList.remove("mostrar"), 2000);
+    if (toast) {
+        toast.classList.add("mostrar");
+        setTimeout(() => toast.classList.remove("mostrar"), 2000);
+    }
 }
 
 function actualizarCarrito() {
@@ -428,11 +426,6 @@ function configurarEventos() {
         renderizar();
     });
 
-    inputBusqueda.addEventListener("input", function () {
-        paginaActual = 1;
-        renderizar();
-    });
-
     document.getElementById("btnWhatsapp").addEventListener("click", function () {
         if (carrito.length === 0) {
             alert("Tu carrito está vacío");
@@ -450,7 +443,179 @@ function configurarEventos() {
         });
 
         mensaje += `%0ATotal: ${formatearPrecio(total)}`;
-
         window.open(`https://wa.me/${numeroWhatsapp}?text=${mensaje}`, "_blank");
     });
+}
+
+/* =========================================================
+   10) BUSCADOR AVANZADO CON SUGERENCIAS
+   ========================================================= */
+function configurarEventosBuscadorAvanzado() {
+    if (!inputBuscador || !contenedor) return;
+
+    function normalizar(texto) {
+        return (texto || "")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase()
+            .trim();
+    }
+
+    function obtenerCards() {
+        return Array.from(contenedor.querySelectorAll(".card"));
+    }
+
+    function nombreDeCard(card) {
+        const titulo = card.querySelector(".card-body h5, .card-title");
+        return titulo ? titulo.textContent.trim() : "";
+    }
+
+    function resaltarCoincidencia(nombre, valor) {
+        const nombreNorm = normalizar(nombre);
+        const valorNorm = normalizar(valor);
+        const idx = nombreNorm.indexOf(valorNorm);
+        if (idx === -1) return nombre;
+        return (
+            nombre.slice(0, idx) +
+            "<strong>" + nombre.slice(idx, idx + valor.length) + "</strong>" +
+            nombre.slice(idx + valor.length)
+        );
+    }
+
+    function aplicarFiltro(valor) {
+        const termino = normalizar(valor);
+        const cards = obtenerCards();
+        let visibles = 0;
+
+        cards.forEach(function (card) {
+            const coincide = !termino || normalizar(nombreDeCard(card)).includes(termino);
+            const columna = card.closest(".col") || card;
+            columna.style.display = coincide ? "" : "none";
+            if (coincide) visibles++;
+        });
+
+        if (paginacion) paginacion.style.display = termino ? "none" : "";
+        if (sinResultados) sinResultados.style.display = (termino && visibles === 0) ? "block" : "none";
+    }
+
+    function ocultarSugerencias() {
+        if (!listaSugerencias) return;
+        listaSugerencias.classList.remove("mostrar");
+        listaSugerencias.innerHTML = "";
+        indiceActivo = -1;
+    }
+
+    function mostrarSugerencias(valor) {
+        if (!listaSugerencias) return;
+        const termino = normalizar(valor);
+        listaSugerencias.innerHTML = "";
+        indiceActivo = -1;
+
+        if (!termino) {
+            ocultarSugerencias();
+            return;
+        }
+
+        const nombres = [...new Set(obtenerCards().map(nombreDeCard).filter(Boolean))];
+        const coincidencias = nombres
+            .filter(function (nombre) { return normalizar(nombre).includes(termino); })
+            .slice(0, 6);
+
+        if (!coincidencias.length) {
+            ocultarSugerencias();
+            return;
+        }
+
+        coincidencias.forEach(function (nombre) {
+            const li = document.createElement("li");
+            li.innerHTML = '<i class="bi bi-search"></i> <span>' + resaltarCoincidencia(nombre, valor) + '</span>';
+            li.addEventListener("click", function () {
+                seleccionarSugerencia(nombre);
+            });
+            listaSugerencias.appendChild(li);
+        });
+
+        listaSugerencias.classList.add("mostrar");
+    }
+
+    function seleccionarSugerencia(nombre) {
+        inputBuscador.value = nombre;
+        aplicarFiltro(nombre);
+        ocultarSugerencias();
+        if (btnLimpiar) btnLimpiar.classList.add("visible");
+
+        const cardCoincide = obtenerCards().find(function (card) {
+            return nombreDeCard(card) === nombre;
+        });
+        if (cardCoincide) {
+            cardCoincide.scrollIntoView({ behavior: "smooth", block: "center" });
+            cardCoincide.classList.add("card-destacada");
+            setTimeout(function () { cardCoincide.classList.remove("card-destacada"); }, 1200);
+        }
+    }
+
+    inputBuscador.addEventListener("input", function () {
+        const valor = this.value;
+        if (btnLimpiar) btnLimpiar.classList.toggle("visible", valor.length > 0);
+        aplicarFiltro(valor);
+        mostrarSugerencias(valor);
+    });
+
+    inputBuscador.addEventListener("focus", function () {
+        if (this.value) mostrarSugerencias(this.value);
+    });
+
+    inputBuscador.addEventListener("keydown", function (e) {
+        if (!listaSugerencias) return;
+        const items = Array.from(listaSugerencias.querySelectorAll("li"));
+        if (!items.length) return;
+
+        if (e.key === "ArrowDown") {
+            e.preventDefault();
+            indiceActivo = (indiceActivo + 1) % items.length;
+        } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            indiceActivo = (indiceActivo - 1 + items.length) % items.length;
+        } else if (e.key === "Enter") {
+            if (indiceActivo >= 0) {
+                e.preventDefault();
+                items[indiceActivo].click();
+            } else {
+                ocultarSugerencias();
+            }
+            return;
+        } else if (e.key === "Escape") {
+            ocultarSugerencias();
+            return;
+        } else {
+            return;
+        }
+
+        items.forEach(function (item, i) {
+            item.classList.toggle("activa", i === indiceActivo);
+        });
+        if (items[indiceActivo]) items[indiceActivo].scrollIntoView({ block: "nearest" });
+    });
+
+    if (btnLimpiar) {
+        btnLimpiar.addEventListener("click", function () {
+            inputBuscador.value = "";
+            aplicarFiltro("");
+            ocultarSugerencias();
+            this.classList.remove("visible");
+            inputBuscador.focus();
+        });
+    }
+
+    document.addEventListener("click", function (e) {
+        if (!e.target.closest(".buscador-wrap") && !e.target.closest("#listaSugerencias")) {
+            ocultarSugerencias();
+        }
+    });
+
+    // Observador para cuando cambia la paginación o filtros externos re-renderizan
+    const observador = new MutationObserver(function () {
+        if (inputBuscador.value) aplicarFiltro(inputBuscador.value);
+    });
+    observador.observe(contenedor, { childList: true });
 }

@@ -17,32 +17,28 @@
 
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
-        <div class="container">
+    <div id="header"></div>
 
-            <a class="navbar-brand d-flex align-items-center" href="#">
-                <img src="img/logo-mandala.jpg" alt="Mandala Belleza Integral" height="80">
-                <span class="ms-2 logo-text">MANDALA</span>
-            </a>
+    <script>
+    fetch("header.html")
+        .then(response => response.text())
+        .then(data => {
+            const contenedorHeader = document.getElementById("header");
+            contenedorHeader.innerHTML = data;
 
-            <button class="btn-carrito" type="button" data-bs-toggle="offcanvas" data-bs-target="#carritoOffcanvas">
-                🛒 <span class="badge-carrito" id="contadorCarrito">0</span>
-            </button>
-
-            <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menu">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="menu">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="productos.html">Productos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="blog.html">Blog</a></li>
-                </ul>
-            </div>
-
-        </div>
-    </nav>
+            // Los <script> insertados vía innerHTML no se ejecutan solos.
+            // Los volvemos a crear manualmente para que sí corran.
+            contenedorHeader.querySelectorAll("script").forEach(scriptViejo => {
+                const scriptNuevo = document.createElement("script");
+                if (scriptViejo.src) {
+                    scriptNuevo.src = scriptViejo.src;
+                } else {
+                    scriptNuevo.textContent = scriptViejo.textContent;
+                }
+                document.body.appendChild(scriptNuevo);
+            });
+        });
+    </script>
 
     <header>
 
@@ -104,11 +100,20 @@
 
         <div class="row g-2">
 
-            <div class="col-md-5">
-                <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Buscar productos...">
+            <div class="col-md-5 position-relative">
+                <div class="buscador-wrap">
+                    <i class="bi bi-search buscador-icono"></i>
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="buscadorProductos"
+                        placeholder="Buscar productos..."
+                        autocomplete="off">
+                    <button type="button" class="buscador-limpiar" id="btnLimpiarBusqueda" aria-label="Limpiar búsqueda">
+                        <i class="bi bi-x-circle-fill"></i>
+                    </button>
+                </div>
+                <ul class="buscador-sugerencias" id="listaSugerencias"></ul>
             </div>
 
             <div class="col-md-3">
@@ -152,6 +157,13 @@
 
         <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4" id="contenedor-productos">
             <!-- Las cards de productos se generan automáticamente con JS -->
+        </div>
+
+        <!-- Mensaje cuando la búsqueda no encuentra productos -->
+        <div class="sin-resultados-busqueda text-center py-5" id="sinResultadosBusqueda">
+            <i class="bi bi-search"></i>
+            <p class="mb-1">No encontramos productos que coincidan con tu búsqueda.</p>
+            <p class="sin-resultados-sugerencia">Probá con otra palabra o revisá que esté bien escrito.</p>
         </div>
 
         <!-- Paginación -->
@@ -207,6 +219,7 @@ fetch("footer.html")
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/script.js"></script>
+    <script src="js/buscador.js"></script>
 
 </body>
 </html>
