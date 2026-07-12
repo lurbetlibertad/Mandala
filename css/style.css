@@ -1,9 +1,20 @@
 body {
+    min-height: 100vh;   /* fallback para navegadores viejos */
+    min-height: 100dvh;  /* altura real de pantalla en mobile (evita el hueco con la barra de direcciones) */
+    display: flex;
+    flex-direction: column;
     background-color: #F7F9F5;
     background-image: url("../img/hojasfondo.svg");
     background-repeat: no-repeat;
     background-position: center top;
     background-size: cover;
+}
+
+/* El footer real se inyecta dentro de este div vía JS (fetch footer.html).
+   Como este div es el hijo directo de body (el flex container), el
+   margin-top:auto tiene que ir acá, no en el <footer> de adentro. */
+#footer {
+    margin-top: auto;
 }
 /* ===== NAVBAR (misma paleta que el footer) ===== */
 

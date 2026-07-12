@@ -111,21 +111,20 @@ function limpiarClavesProducto(producto) {
     return limpio;
 }
 
+// CORREGIDA: Procesa correctamente formatos como $30.100,00 sin romper la web
 function limpiarPrecio(valorCrudo) {
     if (valorCrudo === undefined || valorCrudo === null || valorCrudo === "") return 0;
 
     let texto = String(valorCrudo).replace(/\$/g, "").trim();
     if (!texto) return 0;
 
-    const partes = texto.split(".");
-
-    if (partes.length === 2 && partes[1].length === 2) {
-        return Math.round(parseFloat(texto) * 1000);
+    if (texto.includes(",")) {
+        texto = texto.replace(/\./g, ""); // Quita puntos de miles
+        texto = texto.replace(/,/g, "."); // Cambia coma por punto decimal de JS
     }
 
-    texto = texto.replace(/\./g, "");
-    const numero = Number(texto);
-    return isNaN(numero) ? 0 : numero;
+    const numero = parseFloat(texto);
+    return isNaN(numero) ? 0 : Math.round(numero);
 }
 
 /* =========================================================
@@ -498,7 +497,7 @@ function configurarEventosBuscadorAvanzado() {
         const nombreNorm = normalizar(nombre);
         const valorNorm = normalizar(valor);
         const idx = nombreNorm.indexOf(valorNorm);
-        if (idx === -1) return nombre;
+        if (idx === -1) return name;
         return (
             nombre.slice(0, idx) +
             "<strong>" + nombre.slice(idx, idx + valor.length) + "</strong>" +
