@@ -46,6 +46,11 @@ async function init() {
         ]);
 
         productosData = productosCrudos.map(limpiarClavesProducto);
+        console.log("TOTAL:", productosData.length);
+
+productosData.forEach((p, i) => {
+    console.log(i, p.nombre);
+});
 
         config = Object.fromEntries(
             configCrudo.map(fila => [
@@ -92,9 +97,13 @@ async function cargarHojaComoObjetos(nombreHoja) {
         header: true,
         skipEmptyLines: true
     });
+    console.log(resultado.data[0]);
+console.log(resultado.data[1]);
+console.log(resultado.data.length);
+console.table(resultado.errors);
 
     if (resultado.errors && resultado.errors.length) {
-        console.warn(`Avisos al parsear la hoja "${nombreHoja}":`, resultado.errors);
+        console.table(resultado.errors);
     }
 
     return resultado.data;
