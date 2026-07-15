@@ -39,19 +39,16 @@ async function init() {
     btnLimpiar = document.getElementById("btnLimpiarBusqueda");
     sinResultados = document.getElementById("sinResultadosBusqueda");
 
+    // Recupera el carrito guardado (si venía de otra página o de una recarga)
+    cargarCarritoGuardado();
+    actualizarCarrito();
+    configurarEventoWhatsapp();
+
+    // La Config (medios de pago, monto de envío gratis, etc.) se trae en
+    // TODAS las páginas, porque la barra de beneficios del header la usa
+    // en todos lados, no solo en Productos.
     try {
-        const [productosCrudos, configCrudo] = await Promise.all([
-            cargarHojaComoObjetos("Productos"),
-            cargarHojaComoObjetos("Config")
-        ]);
-
-        productosData = productosCrudos.map(limpiarClavesProducto);
-        console.log("TOTAL:", productosData.length);
-
-productosData.forEach((p, i) => {
-    console.log(i, p.nombre);
-});
-
+        const configCrudo = await cargarHojaComoObjetos("Config");
         config = Object.fromEntries(
             configCrudo.map(fila => [
                 String(fila.clave || "").trim(),
@@ -59,17 +56,34 @@ productosData.forEach((p, i) => {
             ])
         );
         console.log("Config cargada:", config);
+        actualizarBarraEnvioGratis();
+    } catch (error) {
+        console.warn("No se pudo cargar la configuración:", error);
+    }
+
+    // Páginas sin grilla de productos (por ejemplo blog.html o las páginas
+    // legales) no necesitan traer el catálogo: con esto ya alcanza.
+    if (!contenedor) return;
+
+    try {
+        const productosCrudos = await cargarHojaComoObjetos("Productos");
+
+        productosData = productosCrudos.map(limpiarClavesProducto);
+        console.log("TOTAL:", productosData.length);
+
+productosData.forEach((p, i) => {
+    console.log(i, p.nombre);
+});
     } catch (error) {
         console.error("No se pudieron cargar los productos:", error);
-        cargando.innerHTML = `<p class="text-danger">No se pudieron cargar los productos. Probá recargar la página.</p>`;
+        if (cargando) cargando.innerHTML = `<p class="text-danger">No se pudieron cargar los productos. Probá recargar la página.</p>`;
         return;
     }
 
-    cargando.style.display = "none";
+    if (cargando) cargando.style.display = "none";
 
     poblarCategorias();
     renderizarMediosDePago();
-    renderizarAvisoEnvioGratis();
     configurarEventos();
     renderizar();
     configurarEventosBuscadorAvanzado();
@@ -264,17 +278,57 @@ function generarBotonesPaginacion(totalPaginas) {
 /* =========================================================
    6.1) MODAL DE DETALLE DE PRODUCTO
    ========================================================= */
+
+// Rellena un renglón de detalle (presentación, ingredientes, modo de uso, tipo de piel).
+// Si el dato viene vacío en la planilla, oculta el renglón en vez de mostrarlo vacío.
+function llenarDetalleProducto(idWrap, idValor, valorCrudo) {
+    const wrap = document.getElementById(idWrap);
+    const valorEl = document.getElementById(idValor);
+    if (!wrap || !valorEl) return;
+
+    const valor = String(valorCrudo || "").trim();
+    const esVacio = !valor || valor.toUpperCase() === "N/A" || valor.toUpperCase() === "NAN";
+
+    if (esVacio) {
+        wrap.classList.add("d-none");
+        valorEl.textContent = "";
+    } else {
+        wrap.classList.remove("d-none");
+        valorEl.textContent = valor;
+    }
+}
+
 function abrirModalProducto(producto) {
     const precioOriginal = limpiarPrecio(producto.precio);
     const final = precioFinal(producto);
     const tieneDescuento = final < precioOriginal;
 
     document.getElementById("modalProductoNombre").textContent = producto.nombre || "";
-    document.getElementById("modalProductoImagen").src =
-        producto.imagen || "https://placehold.co/400x300/DDE7D4/3E4A3C?text=Producto";
+    const imgPrincipal = document.getElementById("modalProductoImagen");
+    imgPrincipal.src = producto.imagen || "https://placehold.co/400x300/DDE7D4/3E4A3C?text=Producto";
+    imgPrincipal.alt = producto.nombre || "Producto Mandala";
+
+    const imagenHoverEl = document.getElementById("modalProductoImagenHover");
+    if (imagenHoverEl) {
+        const tieneImagenHover = producto.imagenHover && String(producto.imagenHover).trim();
+        if (tieneImagenHover) {
+            imagenHoverEl.src = producto.imagenHover;
+            imagenHoverEl.alt = (producto.nombre || "Producto Mandala") + " - vista adicional";
+            imagenHoverEl.classList.remove("d-none");
+        } else {
+            imagenHoverEl.src = "";
+            imagenHoverEl.classList.add("d-none");
+        }
+    }
+
     document.getElementById("modalProductoMarca").textContent = producto.marca || "";
     document.getElementById("modalProductoDescripcionCorta").textContent = producto.descripcionCorta || "";
     document.getElementById("modalProductoDescripcionLarga").textContent = producto.descripcionLarga || "";
+
+    llenarDetalleProducto("modalProductoTamanoWrap", "modalProductoTamano", producto.tamaño);
+    llenarDetalleProducto("modalProductoIngredientesWrap", "modalProductoIngredientes", producto.ingredientesDestacados);
+    llenarDetalleProducto("modalProductoModoUsoWrap", "modalProductoModoUso", producto.modoDeUso);
+    llenarDetalleProducto("modalProductoTipoPielWrap", "modalProductoTipoPiel", producto.tipoDePiel);
 
     const precioAnteriorEl = document.getElementById("modalProductoPrecioAnterior");
     precioAnteriorEl.textContent = tieneDescuento ? formatearPrecio(precioOriginal) : "";
@@ -320,8 +374,8 @@ function crearCardHTML(producto) {
     <div class="col mb-4 producto-card" data-categoria="${producto.categoria || ""}">
         <div class="card shadow h-100 card-clickeable" role="button">
             <div class="img-hover-wrap">
-                <img src="${producto.imagen || 'https://placehold.co/400x300/DDE7D4/3E4A3C?text=Producto'}" class="card-img-top img-normal">
-                ${producto.imagenHover ? `<img src="${producto.imagenHover}" class="card-img-top img-hover">` : ""}
+                <img src="${producto.imagen || 'https://placehold.co/400x300/DDE7D4/3E4A3C?text=Producto'}" class="card-img-top img-normal" alt="${producto.nombre || 'Producto Mandala'}" loading="lazy">
+                ${producto.imagenHover ? `<img src="${producto.imagenHover}" class="card-img-top img-hover" alt="${producto.nombre || 'Producto Mandala'} - vista adicional" loading="lazy">` : ""}
                 ${tieneDescuento ? `<span class="badge-descuento">-${String(producto.descuento).replace(/%/g, "").trim()}%</span>` : ""}
                 ${esDestacado ? `<span class="badge-destacado">★ Más vendido</span>` : ""}
             </div>
@@ -358,6 +412,30 @@ function poblarCategorias() {
 }
 
 /* =========================================================
+   7.1) PERSISTENCIA DEL CARRITO (para que no se borre al cambiar de página o recargar)
+   ========================================================= */
+const CLAVE_CARRITO_GUARDADO = "mandala_carrito";
+
+function guardarCarrito() {
+    try {
+        localStorage.setItem(CLAVE_CARRITO_GUARDADO, JSON.stringify(carrito));
+    } catch (error) {
+        console.warn("No se pudo guardar el carrito en el navegador:", error);
+    }
+}
+
+function cargarCarritoGuardado() {
+    try {
+        const guardado = localStorage.getItem(CLAVE_CARRITO_GUARDADO);
+        carrito = guardado ? JSON.parse(guardado) : [];
+        if (!Array.isArray(carrito)) carrito = [];
+    } catch (error) {
+        console.warn("No se pudo leer el carrito guardado:", error);
+        carrito = [];
+    }
+}
+
+/* =========================================================
    8) MEDIOS DE PAGO Y ENVÍO
    ========================================================= */
 function renderizarMediosDePago() {
@@ -379,6 +457,29 @@ function renderizarAvisoEnvioGratis() {
 
     contenedorAviso.innerHTML =
         `<span class="badge-envio-gratis"><span class="camion">🚚</span> Envío gratis en compras desde ${formatearPrecio(monto)}</span>`;
+}
+
+// Actualiza el monto de "envío gratis" en la barra deslizante del header
+// (barra-anuncios), usando el mismo dato de la planilla ("Config" ->
+// envio_gratis_desde) que ya usa el aviso de arriba de los productos.
+// La llamamos tanto apenas se carga la Config como apenas termina de
+// inyectarse el header (fetch asíncrono), porque no sabemos cuál de las
+// dos termina primero.
+function actualizarBarraEnvioGratis() {
+    const items = document.querySelectorAll(".barra-item-envio-gratis");
+    if (!items.length) return; // el header todavía no se inyectó
+
+    const monto = Number(config.envio_gratis_desde);
+
+    if (!monto) {
+        items.forEach(el => { el.style.display = "none"; });
+        return;
+    }
+
+    items.forEach(el => { el.style.display = ""; });
+    document.querySelectorAll(".barra-envio-gratis-monto").forEach(el => {
+        el.textContent = formatearPrecio(monto);
+    });
 }
 
 function actualizarAvisoEnvioCarrito(totalCarrito) {
@@ -415,9 +516,18 @@ function mostrarToast() {
 }
 
 function actualizarCarrito() {
+    // Siempre guarda el estado, aunque el header (con el ícono del carrito) todavía no haya cargado
+    guardarCarrito();
+
     const lista = document.getElementById("listaCarrito");
     const total = document.getElementById("totalCarrito");
     const contador = document.getElementById("contadorCarrito");
+
+    // El contador vive en header.html, que se inyecta aparte y puede tardar en estar listo.
+    // Si todavía no existe, no rompemos: se va a actualizar solo cuando el header termine de cargar.
+    if (contador) contador.textContent = carrito.length;
+
+    if (!lista || !total) return;
 
     lista.innerHTML = "";
     let suma = 0;
@@ -431,7 +541,6 @@ function actualizarCarrito() {
     });
 
     total.textContent = formatearPrecio(suma);
-    contador.textContent = carrito.length;
     actualizarAvisoEnvioCarrito(suma);
 
     document.querySelectorAll("#listaCarrito button").forEach(btn => {
@@ -457,8 +566,20 @@ function configurarEventos() {
         paginaActual = 1;
         renderizar();
     });
+}
 
-    document.getElementById("btnWhatsapp").addEventListener("click", function () {
+/* =========================================================
+   9.1) BOTÓN DE WHATSAPP (listener delegado)
+   El botón vive en header.html, que se inyecta de forma asíncrona,
+   así que en vez de buscarlo una sola vez al arrancar (podría no
+   existir todavía), escuchamos los clics en todo el documento y
+   revisamos si vinieron del botón. Así funciona sin importar
+   cuándo termine de cargar el header, en cualquier página.
+   ========================================================= */
+function configurarEventoWhatsapp() {
+    document.addEventListener("click", function (e) {
+        if (!e.target.closest("#btnWhatsapp")) return;
+
         if (carrito.length === 0) {
             alert("Tu carrito está vacío");
             return;
@@ -651,3 +772,25 @@ function configurarEventosBuscadorAvanzado() {
     });
     observador.observe(contenedor, { childList: true });
 }
+
+/* =========================================================
+   BOTÓN "VOLVER ARRIBA"
+   ========================================================= */
+document.addEventListener("DOMContentLoaded", function () {
+    const btnVolverArriba = document.getElementById("btnVolverArriba");
+    if (!btnVolverArriba) return;
+
+    const UMBRAL_SCROLL = 400; // px que hay que bajar para que aparezca
+
+    window.addEventListener("scroll", function () {
+        if (window.scrollY > UMBRAL_SCROLL) {
+            btnVolverArriba.classList.add("visible");
+        } else {
+            btnVolverArriba.classList.remove("visible");
+        }
+    });
+
+    btnVolverArriba.addEventListener("click", function () {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+});

@@ -1,4 +1,22 @@
-<nav class="navbar navbar-expand-lg navbar-mandala shadow-sm">
+<!-- Barra de beneficios: aparece arriba de todo, en todas las páginas -->
+<div class="barra-anuncios">
+    <div class="barra-anuncios-track">
+        <span><i class="bi bi-cash-coin"></i> 10% OFF pagando en efectivo o transferencia</span>
+        <span class="barra-anuncios-separador">•</span>
+        <span><i class="bi bi-truck"></i> Envíos a todo el país</span>
+        <span class="barra-anuncios-separador barra-item-envio-gratis">•</span>
+        <span class="barra-item-envio-gratis"><i class="bi bi-box-seam"></i> Envío gratis en compras superiores a <span class="barra-envio-gratis-monto">$80.000</span></span>
+        <span class="barra-anuncios-separador">•</span>
+        <span><i class="bi bi-cash-coin"></i> 10% OFF pagando en efectivo o transferencia</span>
+        <span class="barra-anuncios-separador">•</span>
+        <span><i class="bi bi-truck"></i> Envíos a todo el país</span>
+        <span class="barra-anuncios-separador barra-item-envio-gratis">•</span>
+        <span class="barra-item-envio-gratis"><i class="bi bi-box-seam"></i> Envío gratis en compras superiores a <span class="barra-envio-gratis-monto">$80.000</span></span>
+        <span class="barra-anuncios-separador">•</span>
+    </div>
+</div>
+
+<nav class="navbar navbar-expand-lg navbar-mandala shadow-sm sticky-top">
     <div class="container">
 
         <a class="navbar-brand d-flex align-items-center" href="index.html">
@@ -6,13 +24,15 @@
             <span class="ms-2 logo-text">MANDALA</span>
         </a>
 
-        <button class="btn-carrito" type="button" data-bs-toggle="offcanvas" data-bs-target="#carritoOffcanvas">
-            🛒 <span class="badge-carrito" id="contadorCarrito">0</span>
-        </button>
+        <div class="d-flex align-items-center order-lg-last gap-3">
+            <button class="btn-carrito" type="button" data-bs-toggle="offcanvas" data-bs-target="#carritoOffcanvas">
+                🛒 <span class="badge-carrito" id="contadorCarrito">0</span>
+            </button>
 
-        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+            <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
 
         <div class="collapse navbar-collapse" id="menu">
             <ul class="navbar-nav ms-auto">
@@ -25,6 +45,28 @@
     </div>
 </nav>
 
+<!-- Panel del carrito: vive acá para que esté disponible en TODAS las páginas -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="carritoOffcanvas">
+    <div class="offcanvas-header">
+        <h5>Tu Carrito</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body d-flex flex-column">
+        <ul id="listaCarrito" class="list-unstyled flex-grow-1"></ul>
+        <div id="avisoEnvioCarrito" class="mb-2"></div>
+        <hr>
+        <h5>Total: <span id="totalCarrito">$0</span></h5>
+        <button class="btn-mandala w-100 mt-2" id="btnWhatsapp">
+            Finalizar pedido por WhatsApp
+        </button>
+    </div>
+</div>
+
+<!-- Toast de confirmación -->
+<div class="toast-confirmacion" id="toastConfirmacion">
+    ✓ Producto agregado al carrito
+</div>
+
 <script>
 (function () {
     // Marca el link del menú que corresponde a la página actual,
@@ -35,5 +77,9 @@
             link.classList.add('active');
         }
     });
+
+    // Por si la Config (planilla) ya había terminado de cargar antes de
+    // que este header se inyectara, actualizamos el monto de envío gratis.
+    if (typeof actualizarBarraEnvioGratis === "function") actualizarBarraEnvioGratis();
 })();
 </script>

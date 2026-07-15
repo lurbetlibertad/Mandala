@@ -16,6 +16,145 @@ body {
 #footer {
     margin-top: auto;
 }
+/* ===== BARRA DE BENEFICIOS (arriba del navbar, en todas las páginas) ===== */
+.barra-anuncios{
+    background:#4f5d48;
+    color:#F7F9F5;
+    overflow:hidden;
+    white-space:nowrap;
+    padding:9px 0;
+}
+
+.barra-anuncios-track{
+    display:inline-flex;
+    align-items:center;
+    animation: deslizarAnuncios 16s linear infinite;
+    will-change: transform;
+}
+
+.barra-anuncios-track span{
+    font-size:.8rem;
+    font-weight:600;
+    letter-spacing:.03em;
+}
+
+.barra-anuncios-track i{
+    color:#be7a62;
+    margin-right:4px;
+}
+
+.barra-anuncios-separador{
+    margin:0 24px;
+    opacity:.5;
+}
+
+@keyframes deslizarAnuncios{
+    from{ transform: translateX(0); }
+    to{ transform: translateX(-50%); }
+}
+
+/* Respeta a quienes prefieren menos movimiento en pantalla */
+@media (prefers-reduced-motion: reduce){
+    .barra-anuncios-track{
+        animation: none;
+    }
+}
+
+@media (max-width: 576px){
+    .barra-anuncios-track span{
+        font-size:.72rem;
+    }
+}
+
+/* ===== PÁGINAS LEGALES (cambios y devoluciones, políticas de privacidad) ===== */
+.pagina-legal-intro{
+    font-size:1.05rem;
+    color:#4f5d48;
+    font-weight:600;
+    line-height:1.7;
+    padding-bottom:20px;
+    border-bottom:1px solid #EFEAE1;
+    margin-bottom:24px;
+}
+
+.pagina-legal h2{
+    font-size:1.05rem;
+    font-family:'Playfair Display', serif;
+    color:#4f5d48;
+    margin-top:28px;
+    margin-bottom:10px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.pagina-legal h2 i{
+    color:#be7a62;
+    font-size:1rem;
+}
+
+.pagina-legal p{
+    color:#666;
+    line-height:1.8;
+    margin-bottom:14px;
+}
+
+.pagina-legal a{
+    color:#be7a62;
+    text-decoration:underline;
+}
+
+.pagina-legal-lista{
+    color:#666;
+    line-height:1.8;
+    padding-left:20px;
+    margin-bottom:14px;
+}
+
+.pagina-legal-lista li{
+    margin-bottom:6px;
+}
+
+.pagina-legal-fecha{
+    font-size:.8rem;
+    color:#999;
+    font-style:italic;
+}
+
+.pagina-legal-contacto{
+    margin-top:32px;
+    padding-top:24px;
+    border-top:1px solid #EFEAE1;
+    text-align:center;
+}
+
+.pagina-legal-contacto p{
+    margin-bottom:0;
+    color:#4f5d48;
+    font-weight:600;
+}
+
+.btn-contacto-legal,
+.pagina-legal a.btn-contacto-legal{
+    background-color:#be7a62;
+    border:none;
+    color:#FFF8F0;
+    text-decoration:none;
+    border-radius:8px;
+    padding:10px 20px;
+    font-weight:600;
+    letter-spacing:0.02em;
+    transition:background-color 0.2s ease, transform 0.15s ease;
+}
+
+.btn-contacto-legal:hover,
+.pagina-legal a.btn-contacto-legal:hover{
+    background-color:#a3634d;
+    color:#FFF8F0;
+    text-decoration:none;
+    transform:translateY(-1px);
+}
+
 /* ===== NAVBAR (misma paleta que el footer) ===== */
 
 .navbar-mandala{
@@ -890,4 +1029,92 @@ input.form-control[type="text"]:focus{
     display: inline !important;
     color: #be7a62 !important;
     text-decoration: underline;
+}
+/* =========================================================
+   DETALLE DE PRODUCTO EN MODAL (presentación, ingredientes, modo de uso, tipo de piel)
+   ========================================================= */
+.detalle-producto {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-top: 1px solid #EFEAE1;
+    border-bottom: 1px solid #EFEAE1;
+    padding: 14px 0;
+}
+
+.detalle-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.detalle-item.d-none {
+    display: none;
+}
+
+.detalle-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #7C8B5F;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.detalle-label i {
+    color: #be7a62;
+    font-size: 0.9rem;
+}
+
+.detalle-valor {
+    font-size: 0.9rem;
+    color: #4f5d48;
+    line-height: 1.5;
+}
+
+/* =========================================================
+   BOTÓN "VOLVER ARRIBA"
+   ========================================================= */
+.btn-volver-arriba {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: none;
+    background-color: #7C8B5F;
+    color: #FFF8F0;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    z-index: 1050;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: opacity 0.25s ease, transform 0.25s ease, background-color 0.2s ease;
+}
+
+.btn-volver-arriba.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.btn-volver-arriba:hover {
+    background-color: #5C6B4F;
+}
+
+@media (max-width: 576px) {
+    .btn-volver-arriba {
+        bottom: 16px;
+        right: 16px;
+        width: 42px;
+        height: 42px;
+    }
 }

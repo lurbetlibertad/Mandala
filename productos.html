@@ -8,6 +8,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Alex+Brush&display=swap" rel="stylesheet">
     <title>Productos — Mandala Skincare</title>
 
+    <!-- Meta descripción para buscadores -->
+    <meta name="description" content="Descubrí todos los productos de Mandala Skincare: sérums faciales, espumas de limpieza, emulsiones hidratantes y accesorios de skincare con ingredientes naturales.">
+
+    <!-- Vista previa al compartir el link (WhatsApp, Instagram, Facebook, etc.) -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Mandala Skincare">
+    <meta property="og:title" content="Productos — Mandala Skincare">
+    <meta property="og:description" content="Explorá toda la línea de productos de Mandala: cuidado facial, capilar y accesorios de skincare.">
+    <meta property="og:image" content="img/logo-mandala.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- CSS propio -->
@@ -16,32 +27,32 @@
 
 <body>
 
-    <!-- MENÚ DE NAVEGACIÓN PROPIO -->
-    <nav class="navbar navbar-expand-lg navbar-light navbar-mandala shadow-sm sticky-top">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="index.html">
-                <img src="img/logo-mandala.jpg" alt="Mandala Belleza Integral" height="80">
-                <span class="ms-2 logo-text">MANDALA</span>
-            </a>
+    <div id="header"></div>
 
-            <div class="d-flex align-items-center order-lg-last gap-3">
-                <button class="btn-carrito" type="button" data-bs-toggle="offcanvas" data-bs-target="#carritoOffcanvas">
-                    🛒 <span class="badge-carrito" id="contadorCarrito">0</span>
-                </button>
-                <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menu">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-            </div>
+    <script>
+    fetch("header.html")
+        .then(response => response.text())
+        .then(data => {
+            const contenedorHeader = document.getElementById("header");
+            contenedorHeader.innerHTML = data;
 
-            <div class="collapse navbar-collapse" id="menu">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="productos.html">Productos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="blog.html">Blog</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+            // Los <script> insertados vía innerHTML no se ejecutan solos.
+            // Los volvemos a crear manualmente para que sí corran.
+            contenedorHeader.querySelectorAll("script").forEach(scriptViejo => {
+                const scriptNuevo = document.createElement("script");
+                if (scriptViejo.src) {
+                    scriptNuevo.src = scriptViejo.src;
+                } else {
+                    scriptNuevo.textContent = scriptViejo.textContent;
+                }
+                document.body.appendChild(scriptNuevo);
+            });
+
+            // El contador y el panel del carrito viven acá adentro (header.html);
+            // ahora que ya existen, los actualizamos.
+            if (typeof actualizarCarrito === "function") actualizarCarrito();
+        });
+    </script>
 
     <header class="py-5 text-center">
         <h1 class="titulo-bold text-dark" style="font-size: 2.5rem; font-family: 'Playfair Display', serif;">Nuestros Productos</h1>
@@ -94,7 +105,7 @@
         </div>
 
         <!-- Banner dinámico de envío gratis -->
-        <div class="text-center mt-4" id="aviso-envio-gratis"></div>
+    
     </section>
 
     <!-- CONTENEDOR DE PRODUCTOS -->
@@ -135,12 +146,33 @@
                 <div class="modal-body p-4">
                     <div class="row g-4 align-items-center">
                         <div class="col-md-6">
-                            <img id="modalProductoImagen" src="" class="img-fluid rounded w-100 object-fit-cover" style="max-height: 350px;">
+                            <img id="modalProductoImagen" src="" alt="Producto" class="img-fluid rounded w-100 object-fit-cover" style="max-height: 350px;">
+                            <img id="modalProductoImagenHover" src="" alt="Producto - vista adicional" class="img-fluid rounded w-100 object-fit-cover mt-2 d-none" style="max-height: 350px;">
                         </div>
                         <div class="col-md-6">
                             <p id="modalProductoMarca" class="text-uppercase tracking-wider small fw-bold mb-1" style="color: #be7a62;"></p>
                             <p id="modalProductoDescripcionCorta" class="fw-semibold text-dark mb-2"></p>
-                            <p id="modalProductoDescripcionLarga" class="text-muted small mb-4"></p>
+                            <p id="modalProductoDescripcionLarga" class="text-muted small mb-3"></p>
+
+                            <div class="detalle-producto mb-4" id="modalProductoDetalles">
+                                <div class="detalle-item" id="modalProductoTamanoWrap">
+                                    <span class="detalle-label"><i class="bi bi-box-seam"></i> Presentación</span>
+                                    <span id="modalProductoTamano" class="detalle-valor"></span>
+                                </div>
+                                <div class="detalle-item" id="modalProductoIngredientesWrap">
+                                    <span class="detalle-label"><i class="bi bi-flower2"></i> Ingredientes destacados</span>
+                                    <span id="modalProductoIngredientes" class="detalle-valor"></span>
+                                </div>
+                                <div class="detalle-item" id="modalProductoModoUsoWrap">
+                                    <span class="detalle-label"><i class="bi bi-droplet"></i> Modo de uso</span>
+                                    <span id="modalProductoModoUso" class="detalle-valor"></span>
+                                </div>
+                                <div class="detalle-item" id="modalProductoTipoPielWrap">
+                                    <span class="detalle-label"><i class="bi bi-person"></i> Tipo de piel</span>
+                                    <span id="modalProductoTipoPiel" class="detalle-valor"></span>
+                                </div>
+                            </div>
+
                             <div class="precio-wrap mb-4 bg-light p-3 rounded-3">
                                 <span id="modalProductoPrecioAnterior" class="precio-anterior"></span>
                                 <h4 id="modalProductoPrecioFinal" class="d-inline fw-bold"></h4>
@@ -153,73 +185,34 @@
         </div>
     </div>
 
-    <!-- PANEL LATERAL DE CARRITO (OFFCANVAS) -->
-    <div class="offcanvas offcanvas-end border-0 shadow-lg" tabindex="-1" id="carritoOffcanvas">
-        <div class="offcanvas-header border-bottom py-3">
-            <h5 class="fw-bold m-0" style="font-family: 'Playfair Display', serif; color: #4f5d48;">Tu Carrito</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
-        </div>
-        <div class="offcanvas-body d-flex flex-column">
-            <ul id="listaCarrito" class="list-unstyled flex-grow-1 overflow-y-auto"></ul>
-            <div id="avisoEnvioCarrito" class="mb-2"></div>
-            <hr>
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <span class="text-muted fw-semibold">Total:</span>
-                <span id="totalCarrito" class="fw-bold fs-4" style="color: #4f5d48;">$0</span>
-            </div>
-            <button class="btn-mandala w-100 py-2.5" id="btnWhatsapp">
-                Finalizar pedido por WhatsApp
-            </button>
-        </div>
-    </div>
+    <div id="footer"></div>
 
-    <!-- TOAST DE CONFIRMACIÓN -->
-    <div class="toast-confirmacion" id="toastConfirmacion">
-        ✓ Producto agregado al carrito
-    </div>
+    <script>
+    fetch("footer.html")
+        .then(response => response.text())
+        .then(data => {
+            const contenedorFooter = document.getElementById("footer");
+            contenedorFooter.innerHTML = data;
 
-    <!-- FOOTER INSTITUCIONAL COMPLETO -->
-    <footer class="footer-mandala">
-        <div class="container">
-            <div class="footer-divider">
-                <span></span>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"/></svg>
-                <span></span>
-            </div>
-            <div class="row g-4 text-start">
-                <div class="col-md-4">
-                    <h2 class="footer-logo">MANDALA</h2>
-                    <div class="footer-subtitulo">Belleza Integral</div>
-                    <p class="footer-texto">Espacio dedicado al cuidado facial, cosmética avanzada y capacitación integral para profesionales.</p>
-                </div>
-                <div class="col-md-2">
-                    <h5>Navegación</h5>
-                    <a href="index.html">Inicio</a>
-                    <a href="productos.html">Productos</a>
-                    <a href="blog.html">Blog</a>
-                </div>
-                <!-- <div class="col-md-3">
-                    <h5>Políticas</h5>
-                    <a href="politicas-privacidad.html">Políticas de privacidad</a>
-                    <a href="cambios-y-devoluciones.html">Cambios y devoluciones</a>
-                </div> 
-                <div class="col-md-3">
-                    <h5>Newsletter</h5>
-                    <div class="footer-news">
-                        <input type="email" placeholder="Tu email...">
-                        <button type="button">Unirse</button>
-                    </div>
-                </div>
-            </div>-->
-            <div class="footer-copy">
-                © 2026 Mandala Skincare — Diseñado con dedicación.
-            </div>
-        </div>
-    </footer>
-    
+            contenedorFooter.querySelectorAll("script").forEach(scriptViejo => {
+                const scriptNuevo = document.createElement("script");
+                if (scriptViejo.src) {
+                    scriptNuevo.src = scriptViejo.src;
+                } else {
+                    scriptNuevo.textContent = scriptViejo.textContent;
+                }
+                document.body.appendChild(scriptNuevo);
+            });
+        });
+    </script>
+
+    <!-- Botón flotante para volver arriba -->
+    <button id="btnVolverArriba" class="btn-volver-arriba" aria-label="Volver arriba" title="Volver arriba">
+        <i class="bi bi-arrow-up"></i>
+    </button>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-    <script src="js/script.js?v=3"></script>
+    <script src="js/script.js?v=4"></script>
 </body>
 </html>

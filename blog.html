@@ -15,25 +15,30 @@
 </head>
 <body>
 
-    <!-- MENÚ DE NAVEGACIÓN PROPIO -->
-    <nav class="navbar navbar-expand-lg navbar-light navbar-mandala shadow-sm sticky-top">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="index.html">
-                <img src="img/logo-mandala.jpg" alt="Mandala Belleza Integral" height="80">
-                <span class="ms-2 logo-text">MANDALA</span>
-            </a>
-            <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menu">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="menu">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="productos.html">Productos</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="blog.html">Blog</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <div id="header"></div>
+
+    <script>
+    fetch("header.html")
+        .then(response => response.text())
+        .then(data => {
+            const contenedorHeader = document.getElementById("header");
+            contenedorHeader.innerHTML = data;
+
+            contenedorHeader.querySelectorAll("script").forEach(scriptViejo => {
+                const scriptNuevo = document.createElement("script");
+                if (scriptViejo.src) {
+                    scriptNuevo.src = scriptViejo.src;
+                } else {
+                    scriptNuevo.textContent = scriptViejo.textContent;
+                }
+                document.body.appendChild(scriptNuevo);
+            });
+
+            // El contador y el panel del carrito viven acá adentro (header.html);
+            // ahora que ya existen, los actualizamos.
+            if (typeof actualizarCarrito === "function") actualizarCarrito();
+        });
+    </script>
 
     <header class="py-5 text-center">
         <h1 class="titulo-bold text-dark" style="font-size: 2.5rem; font-family: 'Playfair Display', serif;">Nuestro Blog</h1>
@@ -74,45 +79,28 @@
         </div>
     </section>
 
-    <!-- FOOTER INSTITUCIONAL COMPLETO -->
-    <footer class="footer-mandala">
-        <div class="container">
-            <div class="footer-divider">
-                <span></span>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"/></svg>
-                <span></span>
-            </div>
-            <div class="row g-4 text-start">
-                <div class="col-md-4">
-                    <h2 class="footer-logo">MANDALA</h2>
-                    <div class="footer-subtitulo">Belleza Integral</div>
-                    <p class="footer-texto">Espacio dedicado al cuidado facial, cosmética avanzada y capacitación integral para profesionales.</p>
-                </div>
-                <div class="col-md-2">
-                    <h5>Navegación</h5>
-                    <a href="index.html">Inicio</a>
-                    <a href="productos.html">Productos</a>
-                    <a href="blog.html">Blog</a>
-                </div>
-                <!-- <div class="col-md-3">
-                    <h5>Políticas</h5>
-                    <a href="politicas-privacidad.html">Políticas de privacidad</a>
-                    <a href="cambios-y-devoluciones.html">Cambios y devoluciones</a>
-                </div> 
-                <div class="col-md-3">
-                    <h5>Newsletter</h5>
-                    <div class="footer-news">
-                        <input type="email" placeholder="Tu email...">
-                        <button type="button">Unirse</button>
-                    </div>
-                </div>
-            </div>-->
-            <div class="footer-copy">
-                © 2026 Mandala Skincare — Diseñado con dedicación.
-            </div>
-        </div>
-    </footer>
+    <div id="footer"></div>
+
+    <script>
+    fetch("footer.html")
+        .then(response => response.text())
+        .then(data => {
+            const contenedorFooter = document.getElementById("footer");
+            contenedorFooter.innerHTML = data;
+
+            contenedorFooter.querySelectorAll("script").forEach(scriptViejo => {
+                const scriptNuevo = document.createElement("script");
+                if (scriptViejo.src) {
+                    scriptNuevo.src = scriptViejo.src;
+                } else {
+                    scriptNuevo.textContent = scriptViejo.textContent;
+                }
+                document.body.appendChild(scriptNuevo);
+            });
+        });
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/script.js?v=4"></script>
 </body>
 </html>
