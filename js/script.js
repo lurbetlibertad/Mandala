@@ -68,7 +68,9 @@ async function init() {
     try {
         const productosCrudos = await cargarHojaComoObjetos("Productos");
 
-        productosData = productosCrudos.map(limpiarClavesProducto);
+        productosData = productosCrudos
+            .map(limpiarClavesProducto)
+            .filter(p => p.nombre && p.nombre.trim() !== "");
         console.log("TOTAL:", productosData.length);
 
 productosData.forEach((p, i) => {
@@ -109,7 +111,7 @@ async function cargarHojaComoObjetos(nombreHoja) {
 
     const resultado = Papa.parse(textoCSV, {
         header: true,
-        skipEmptyLines: true
+        skipEmptyLines: "greedy"
     });
     console.log(resultado.data[0]);
 console.log(resultado.data[1]);
