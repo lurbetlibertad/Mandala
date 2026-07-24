@@ -526,6 +526,26 @@ input.form-control[type="text"]:focus{
     cursor: pointer;
 }
 
+.btn-vaciar-carrito {
+    background: none;
+    border: 1px solid #d8d4cb;
+    color: #a3634d;
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.btn-vaciar-carrito:hover {
+    background-color: #FBEDE8;
+    color: #a3634d;
+    border-color: #a3634d;
+}
+
 .toast-confirmacion {
     position: fixed;
     bottom: 30px;

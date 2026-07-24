@@ -17,6 +17,15 @@ let paginaActual = 1;
 let grupoPagina = 0;
 const PAGINAS_POR_GRUPO = 3;
 let indiceActivo = -1;
+let terminoBusqueda = "";
+
+function normalizarTexto(texto) {
+    return (texto || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
+}
 
 // Elementos del DOM
 let contenedor, selectCategoria, selectMarca, selectOrden, paginacion, cargando;
@@ -43,6 +52,8 @@ async function init() {
     cargarCarritoGuardado();
     actualizarCarrito();
     configurarEventoWhatsapp();
+    configurarNewsletter();
+    configurarVaciarCarrito();
 
     // La Config (medios de pago, monto de envío gratis, etc.) se trae en
     // TODAS las páginas, porque la barra de beneficios del header la usa
@@ -180,12 +191,14 @@ function estaActivo(producto) {
 function obtenerProductosFiltrados() {
     const categoria = selectCategoria.value;
     const marca = selectMarca.value;
+    const termino = normalizarTexto(terminoBusqueda);
 
     return productosData.filter(producto => {
         const activo = estaActivo(producto);
         const coincideCategoria = categoria === "Todas las categorías" || producto.categoria === categoria;
         const coincideMarca = marca === "Todas las marcas" || producto.marca === marca;
-        return activo && coincideCategoria && coincideMarca;
+        const coincideBusqueda = !termino || normalizarTexto(producto.nombre).includes(termino);
+        return activo && coincideCategoria && coincideMarca && coincideBusqueda;
     });
 }
 
@@ -196,16 +209,28 @@ function renderizar() {
     let filtrados = obtenerProductosFiltrados();
     filtrados = ordenarProductos(filtrados);
 
-    const totalPaginas = Math.ceil(filtrados.length / PRODUCTOS_POR_PAGINA) || 1;
+    const hayBusqueda = !!terminoBusqueda;
 
-    if (paginaActual > totalPaginas) paginaActual = 1;
+    let enPagina;
+    if (hayBusqueda) {
+        // En modo búsqueda mostramos todos los resultados juntos, sin paginar,
+        // porque el producto que la persona busca puede estar en cualquier página.
+        enPagina = filtrados;
+        if (paginacion) paginacion.innerHTML = "";
+    } else {
+        const totalPaginas = Math.ceil(filtrados.length / PRODUCTOS_POR_PAGINA) || 1;
+        if (paginaActual > totalPaginas) paginaActual = 1;
+        const inicio = (paginaActual - 1) * PRODUCTOS_POR_PAGINA;
+        enPagina = filtrados.slice(inicio, inicio + PRODUCTOS_POR_PAGINA);
+        generarBotonesPaginacion(totalPaginas);
+    }
 
-    const inicio = (paginaActual - 1) * PRODUCTOS_POR_PAGINA;
-    const enPagina = filtrados.slice(inicio, inicio + PRODUCTOS_POR_PAGINA);
+    if (paginacion) paginacion.style.display = hayBusqueda ? "none" : "";
+    if (sinResultados) sinResultados.style.display = (hayBusqueda && enPagina.length === 0) ? "block" : "none";
 
     contenedor.innerHTML = enPagina.length
         ? enPagina.map(crearCardHTML).join("")
-        : `<p class="text-center w-100">No se encontraron productos.</p>`;
+        : (hayBusqueda ? "" : `<p class="text-center w-100">No se encontraron productos.</p>`);
 
     // Eventos de botones de compra
     document.querySelectorAll(".btn-comprar").forEach(btn => {
@@ -227,8 +252,6 @@ function renderizar() {
             cards[i].addEventListener("click", () => abrirModalProducto(producto));
         }
     });
-
-    generarBotonesPaginacion(totalPaginas);
 }
 
 function generarBotonesPaginacion(totalPaginas) {
@@ -589,16 +612,77 @@ function configurarEventoWhatsapp() {
 
         const numeroWhatsapp = config.numeroWhatsapp || NUMERO_WHATSAPP_DEFAULT;
 
-        let mensaje = "Hola! Quiero hacer este pedido:%0A%0A";
+        let mensaje = "Hola! Quiero hacer este pedido:\n\n";
         let total = 0;
 
         carrito.forEach(item => {
-            mensaje += `- ${item.nombre}: ${formatearPrecio(item.precio)}%0A`;
+            mensaje += `- ${item.nombre}: ${formatearPrecio(item.precio)}\n`;
             total += item.precio;
         });
 
-        mensaje += `%0ATotal: ${formatearPrecio(total)}`;
-        window.open(`https://wa.me/${numeroWhatsapp}?text=${mensaje}`, "_blank");
+        mensaje += `\nTotal: ${formatearPrecio(total)}`;
+        window.open(`https://wa.me/${numeroWhatsapp}?text=${encodeURIComponent(mensaje)}`, "_blank");
+    });
+}
+
+/* =========================================================
+   9.2) NEWSLETTER DEL FOOTER
+   El formulario vive en footer.html, que se inyecta de forma asíncrona,
+   así que usamos un listener delegado en "submit" (igual criterio que
+   el botón de WhatsApp del carrito) para que funcione sin importar
+   cuándo termine de cargar el footer.
+   ========================================================= */
+function configurarNewsletter() {
+    document.addEventListener("submit", function (e) {
+        const form = e.target.closest("#formNewsletter");
+        if (!form) return;
+
+        e.preventDefault();
+
+        const input = document.getElementById("inputNewsletter");
+        const email = (input.value || "").trim();
+
+        if (!email || !input.checkValidity()) {
+            input.focus();
+            return;
+        }
+
+        const numeroWhatsapp = config.numeroWhatsapp || NUMERO_WHATSAPP_DEFAULT;
+        const mensaje = `Hola! Quiero suscribirme al newsletter con este mail: ${email}`;
+        window.open(`https://wa.me/${numeroWhatsapp}?text=${encodeURIComponent(mensaje)}`, "_blank");
+
+        input.value = "";
+        mostrarToastNewsletter();
+    });
+}
+
+function mostrarToastNewsletter() {
+    const toast = document.getElementById("toastConfirmacion");
+    if (!toast) return;
+    const textoOriginal = toast.textContent;
+    toast.textContent = "✓ ¡Gracias por suscribirte!";
+    toast.classList.add("mostrar");
+    setTimeout(() => {
+        toast.classList.remove("mostrar");
+        setTimeout(() => { toast.textContent = textoOriginal; }, 300);
+    }, 2000);
+}
+
+/* =========================================================
+   9.3) VACIAR CARRITO
+   El botón vive en header.html (se inyecta async), por eso el
+   listener es delegado, igual criterio que WhatsApp y el newsletter.
+   ========================================================= */
+function configurarVaciarCarrito() {
+    document.addEventListener("click", function (e) {
+        if (!e.target.closest("#btnVaciarCarrito")) return;
+
+        if (carrito.length === 0) return;
+
+        if (confirm("¿Vaciar todo el carrito?")) {
+            carrito = [];
+            actualizarCarrito();
+        }
     });
 }
 
@@ -608,28 +692,11 @@ function configurarEventoWhatsapp() {
 function configurarEventosBuscadorAvanzado() {
     if (!inputBuscador || !contenedor) return;
 
-    function normalizar(texto) {
-        return (texto || "")
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .toLowerCase()
-            .trim();
-    }
-
-    function obtenerCards() {
-        return Array.from(contenedor.querySelectorAll(".card"));
-    }
-
-    function nombreDeCard(card) {
-        const titulo = card.querySelector(".card-body h5, .card-title");
-        return titulo ? titulo.textContent.trim() : "";
-    }
-
     function resaltarCoincidencia(nombre, valor) {
-        const nombreNorm = normalizar(nombre);
-        const valorNorm = normalizar(valor);
+        const nombreNorm = normalizarTexto(nombre);
+        const valorNorm = normalizarTexto(valor);
         const idx = nombreNorm.indexOf(valorNorm);
-        if (idx === -1) return name;
+        if (idx === -1) return nombre;
         return (
             nombre.slice(0, idx) +
             "<strong>" + nombre.slice(idx, idx + valor.length) + "</strong>" +
@@ -638,19 +705,8 @@ function configurarEventosBuscadorAvanzado() {
     }
 
     function aplicarFiltro(valor) {
-        const termino = normalizar(valor);
-        const cards = obtenerCards();
-        let visibles = 0;
-
-        cards.forEach(function (card) {
-            const coincide = !termino || normalizar(nombreDeCard(card)).includes(termino);
-            const columna = card.closest(".col") || card;
-            columna.style.display = coincide ? "" : "none";
-            if (coincide) visibles++;
-        });
-
-        if (paginacion) paginacion.style.display = termino ? "none" : "";
-        if (sinResultados) sinResultados.style.display = (termino && visibles === 0) ? "block" : "none";
+        terminoBusqueda = valor || "";
+        renderizar();
     }
 
     function ocultarSugerencias() {
@@ -662,7 +718,7 @@ function configurarEventosBuscadorAvanzado() {
 
     function mostrarSugerencias(valor) {
         if (!listaSugerencias) return;
-        const termino = normalizar(valor);
+        const termino = normalizarTexto(valor);
         listaSugerencias.innerHTML = "";
         indiceActivo = -1;
 
@@ -671,9 +727,16 @@ function configurarEventosBuscadorAvanzado() {
             return;
         }
 
-        const nombres = [...new Set(obtenerCards().map(nombreDeCard).filter(Boolean))];
+        // Busca en TODO el catálogo (respetando categoría/marca activas y que el
+        // producto esté activo), no solo en lo que ya está dibujado en pantalla.
+        const nombres = [...new Set(
+            productosData
+                .filter(estaActivo)
+                .map(p => p.nombre)
+                .filter(Boolean)
+        )];
         const coincidencias = nombres
-            .filter(function (nombre) { return normalizar(nombre).includes(termino); })
+            .filter(function (nombre) { return normalizarTexto(nombre).includes(termino); })
             .slice(0, 6);
 
         if (!coincidencias.length) {
@@ -699,14 +762,16 @@ function configurarEventosBuscadorAvanzado() {
         ocultarSugerencias();
         if (btnLimpiar) btnLimpiar.classList.add("visible");
 
-        const cardCoincide = obtenerCards().find(function (card) {
-            return nombreDeCard(card) === nombre;
+        // Espera al próximo frame para que renderizar() ya haya dibujado la card.
+        requestAnimationFrame(function () {
+            const boton = contenedor.querySelector('.btn-comprar[data-nombre="' + CSS.escape(nombre) + '"]');
+            const cardCoincide = boton ? boton.closest(".card") : null;
+            if (cardCoincide) {
+                cardCoincide.scrollIntoView({ behavior: "smooth", block: "center" });
+                cardCoincide.classList.add("card-destacada");
+                setTimeout(function () { cardCoincide.classList.remove("card-destacada"); }, 1200);
+            }
         });
-        if (cardCoincide) {
-            cardCoincide.scrollIntoView({ behavior: "smooth", block: "center" });
-            cardCoincide.classList.add("card-destacada");
-            setTimeout(function () { cardCoincide.classList.remove("card-destacada"); }, 1200);
-        }
     }
 
     inputBuscador.addEventListener("input", function () {
@@ -767,12 +832,6 @@ function configurarEventosBuscadorAvanzado() {
             ocultarSugerencias();
         }
     });
-
-    // Observador para cuando cambia la paginación o filtros externos re-renderizan
-    const observador = new MutationObserver(function () {
-        if (inputBuscador.value) aplicarFiltro(inputBuscador.value);
-    });
-    observador.observe(contenedor, { childList: true });
 }
 
 /* =========================================================

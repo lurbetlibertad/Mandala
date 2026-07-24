@@ -25,11 +25,11 @@
         </a>
 
         <div class="d-flex align-items-center order-lg-last gap-3">
-            <button class="btn-carrito" type="button" data-bs-toggle="offcanvas" data-bs-target="#carritoOffcanvas">
+            <button class="btn-carrito" type="button" data-bs-toggle="offcanvas" data-bs-target="#carritoOffcanvas" aria-label="Abrir carrito de compras">
                 🛒 <span class="badge-carrito" id="contadorCarrito">0</span>
             </button>
 
-            <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menu">
+            <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menu" aria-expanded="false" aria-controls="menu" aria-label="Abrir menú de navegación">
                 <span class="navbar-toggler-icon"></span>
             </button>
         </div>
@@ -55,7 +55,12 @@
         <ul id="listaCarrito" class="list-unstyled flex-grow-1"></ul>
         <div id="avisoEnvioCarrito" class="mb-2"></div>
         <hr>
-        <h5>Total: <span id="totalCarrito">$0</span></h5>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="mb-0">Total: <span id="totalCarrito">$0</span></h5>
+            <button class="btn-vaciar-carrito" id="btnVaciarCarrito" type="button">
+                <i class="bi bi-trash3"></i> Vaciar
+            </button>
+        </div>
         <button class="btn-mandala w-100 mt-2" id="btnWhatsapp">
             Finalizar pedido por WhatsApp
         </button>
